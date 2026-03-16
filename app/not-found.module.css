@@ -1,0 +1,118 @@
+.page {
+  min-height: calc(100vh - 64px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 24px;
+}
+
+.container {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  max-width: 540px;
+}
+
+.code {
+  font-family: var(--font-mono);
+  font-size: 96px;
+  font-weight: 700;
+  color: var(--border-strong);
+  line-height: 1;
+  letter-spacing: -4px;
+}
+
+.cipher {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 12px 20px;
+  font-family: var(--font-mono);
+  font-size: 13px;
+}
+
+.plain {
+  color: var(--text-muted);
+}
+
+.arrow {
+  color: var(--accent);
+  font-size: 16px;
+}
+
+.encrypted {
+  color: var(--green);
+  font-weight: 600;
+}
+
+.title {
+  font-family: var(--font-display);
+  font-size: 32px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--text);
+}
+
+.desc {
+  font-size: 16px;
+  color: var(--text-muted);
+  line-height: 1.65;
+}
+
+.actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.homeBtn {
+  display: inline-flex;
+  padding: 11px 22px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  color: var(--text);
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background var(--transition), border-color var(--transition);
+}
+
+.homeBtn:hover {
+  background: var(--card-secondary);
+  border-color: var(--border-strong);
+}
+
+.toolsBtn {
+  display: inline-flex;
+  padding: 11px 22px;
+  background: var(--accent);
+  color: white;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background var(--transition);
+}
+
+.toolsBtn:hover {
+  background: var(--accent-hover);
+}
+
+.hint {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--text-subtle);
+  margin-top: 4px;
+}
+
+.hintLabel {
+  color: var(--accent);
+  font-weight: 600;
+}

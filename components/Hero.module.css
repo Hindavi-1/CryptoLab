@@ -1,0 +1,308 @@
+.hero {
+  position: relative;
+  min-height: calc(100vh - 64px);
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+}
+
+.bg {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(var(--border) 1px, transparent 1px),
+    linear-gradient(90deg, var(--border) 1px, transparent 1px);
+  background-size: 60px 60px;
+  opacity: 0.4;
+  mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black, transparent);
+}
+
+.glow1 {
+  position: absolute;
+  top: 10%;
+  left: -10%;
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, var(--accent-glow) 0%, transparent 70%);
+  border-radius: 50%;
+}
+
+.glow2 {
+  position: absolute;
+  bottom: 5%;
+  right: -5%;
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, rgba(34, 197, 94, 0.08) 0%, transparent 70%);
+  border-radius: 50%;
+}
+
+.content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 80px 24px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 80px;
+  align-items: center;
+  width: 100%;
+  position: relative;
+  z-index: 1;
+}
+
+.left {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-muted);
+  background: var(--card);
+  border: 1px solid var(--border);
+  padding: 6px 14px;
+  border-radius: 100px;
+  width: fit-content;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.badgeDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--green);
+  box-shadow: 0 0 6px var(--green);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; box-shadow: 0 0 6px var(--green); }
+  50% { opacity: 0.6; box-shadow: 0 0 12px var(--green); }
+}
+
+.title {
+  font-family: var(--font-display);
+  font-size: clamp(40px, 5vw, 64px);
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  color: var(--text);
+}
+
+.titleAccent {
+  color: var(--accent);
+  position: relative;
+}
+
+.subtitle {
+  font-size: 17px;
+  line-height: 1.7;
+  color: var(--text-muted);
+  max-width: 440px;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.btnPrimary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--accent);
+  color: white;
+  font-family: var(--font-body);
+  font-size: 15px;
+  font-weight: 600;
+  padding: 12px 24px;
+  border-radius: 10px;
+  text-decoration: none;
+  transition: background var(--transition), transform var(--transition), box-shadow var(--transition);
+  box-shadow: 0 4px 12px var(--accent-glow);
+}
+
+.btnPrimary:hover {
+  background: var(--accent-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px var(--accent-glow);
+}
+
+.btnPrimary:active {
+  transform: translateY(0);
+}
+
+.btnSecondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--card);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 15px;
+  font-weight: 500;
+  padding: 12px 24px;
+  border-radius: 10px;
+  text-decoration: none;
+  border: 1px solid var(--border);
+  transition: background var(--transition), border-color var(--transition), transform var(--transition);
+}
+
+.btnSecondary:hover {
+  background: var(--card-secondary);
+  border-color: var(--border-strong);
+  transform: translateY(-1px);
+}
+
+/* Right side - Encryption demo */
+.right {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.encBox {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 36px;
+  box-shadow: var(--shadow-lg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+.encBox::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--accent), transparent);
+}
+
+.encLabel {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-subtle);
+}
+
+.encText {
+  display: flex;
+  gap: 12px;
+  font-family: var(--font-mono);
+  font-size: clamp(36px, 5vw, 56px);
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  color: var(--text);
+  transition: color var(--transition-slow);
+}
+
+.encText.cipher {
+  color: var(--green);
+}
+
+.encChar {
+  display: inline-block;
+  transition: transform 0.1s;
+}
+
+.encInfo {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--text-subtle);
+  background: var(--card-secondary);
+  border: 1px solid var(--border);
+  padding: 4px 12px;
+  border-radius: 100px;
+}
+
+.encSteps {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.step {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-subtle);
+  padding: 4px 10px;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  transition: all var(--transition);
+}
+
+.stepActive {
+  color: var(--accent);
+  background: var(--accent-glow);
+  border-color: var(--accent);
+  opacity: 1 !important;
+}
+
+.statsRow {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.stat {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  transition: border-color var(--transition), box-shadow var(--transition);
+}
+
+.stat:hover {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-glow);
+}
+
+.statN {
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-weight: 800;
+  color: var(--accent);
+}
+
+.statLabel {
+  font-size: 12px;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+@media (max-width: 900px) {
+  .content {
+    grid-template-columns: 1fr;
+    gap: 48px;
+    padding: 60px 24px;
+  }
+}

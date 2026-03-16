@@ -1,0 +1,124 @@
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  transition: border-color var(--transition), box-shadow var(--transition), transform var(--transition-slow);
+  position: relative;
+  overflow: hidden;
+}
+
+.card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, var(--accent-glow) 0%, transparent 60%);
+  opacity: 0;
+  transition: opacity var(--transition-slow);
+  pointer-events: none;
+}
+
+.card:hover {
+  border-color: var(--accent);
+  box-shadow: var(--shadow-lg), 0 0 0 3px var(--accent-glow);
+  transform: translateY(-4px);
+}
+
+.card:hover::before {
+  opacity: 1;
+}
+
+.top {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex: 1;
+}
+
+.meta {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.category {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--accent);
+  background: var(--accent-glow);
+  border: 1px solid var(--accent);
+  padding: 3px 8px;
+  border-radius: 4px;
+}
+
+.tag {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-subtle);
+  background: var(--card-secondary);
+  border: 1px solid var(--border);
+  padding: 3px 8px;
+  border-radius: 4px;
+}
+
+.name {
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  color: var(--text);
+}
+
+.desc {
+  font-size: 14px;
+  line-height: 1.65;
+  color: var(--text-muted);
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.linkBtn {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-muted);
+  text-decoration: none;
+  padding: 8px 14px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  transition: background var(--transition), border-color var(--transition), color var(--transition);
+}
+
+.linkBtn:hover {
+  background: var(--card-secondary);
+  border-color: var(--border-strong);
+  color: var(--text);
+}
+
+.primaryBtn {
+  font-size: 13px;
+  font-weight: 600;
+  color: white;
+  text-decoration: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  background: var(--accent);
+  transition: background var(--transition), transform var(--transition);
+  margin-left: auto;
+}
+
+.primaryBtn:hover {
+  background: var(--accent-hover);
+  transform: translateX(2px);
+}

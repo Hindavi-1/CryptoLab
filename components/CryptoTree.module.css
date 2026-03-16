@@ -1,0 +1,231 @@
+.section {
+  padding: 96px 0;
+  background: var(--bg-secondary);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 60px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--accent);
+}
+
+.title {
+  font-family: var(--font-display);
+  font-size: clamp(28px, 4vw, 40px);
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  color: var(--text);
+}
+
+.subtitle {
+  font-size: 15px;
+  color: var(--text-muted);
+  max-width: 520px;
+  line-height: 1.65;
+}
+
+.treeWrap {
+  max-width: 760px;
+  margin: 0 auto;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 32px;
+  box-shadow: var(--shadow-md);
+}
+
+.nodeWrapper {
+  display: flex;
+  flex-direction: column;
+}
+
+.node {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background var(--transition), color var(--transition);
+  margin-left: calc(var(--depth, 0) * 24px);
+  user-select: none;
+}
+
+.branch {
+  color: var(--text);
+  font-weight: 600;
+  font-size: 14px;
+  font-family: var(--font-body);
+}
+
+.branch:hover {
+  background: var(--card-secondary);
+}
+
+.leaf {
+  color: var(--text-muted);
+  font-size: 14px;
+  font-family: var(--font-mono);
+  font-weight: 400;
+}
+
+.leaf:hover {
+  background: var(--accent-glow);
+  color: var(--accent);
+}
+
+.selected {
+  background: var(--accent-glow) !important;
+  color: var(--accent) !important;
+}
+
+.arrow {
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-subtle);
+  transition: transform var(--transition);
+  flex-shrink: 0;
+}
+
+.arrowOpen {
+  transform: none;
+}
+
+.arrow:not(.arrowOpen) {
+  transform: rotate(-90deg);
+}
+
+.dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--border-strong);
+  flex-shrink: 0;
+  margin-left: 6px;
+}
+
+.leaf.selected .dot,
+.leaf:hover .dot {
+  background: var(--accent);
+}
+
+.nodeLabel {
+  flex: 1;
+}
+
+.badge {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-subtle);
+  background: var(--card-secondary);
+  border: 1px solid var(--border);
+  padding: 2px 8px;
+  border-radius: 4px;
+  letter-spacing: 0.05em;
+}
+
+.children {
+  position: relative;
+  margin-left: calc(var(--depth, 0) * 24px + 22px);
+}
+
+.children::before {
+  content: '';
+  position: absolute;
+  left: -1px;
+  top: 4px;
+  bottom: 4px;
+  width: 1px;
+  background: var(--border);
+}
+
+/* Leaf card */
+.card {
+  margin-left: calc(var(--depth, 0) * 24px + 12px);
+  margin-top: 4px;
+  margin-bottom: 8px;
+  background: var(--card-secondary);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--accent);
+  border-radius: 8px;
+  padding: 16px;
+  animation: slideIn 0.2s ease;
+}
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.cardDesc {
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--text-muted);
+  margin-bottom: 12px;
+}
+
+.cardActions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.cardBtn {
+  display: inline-flex;
+  align-items: center;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 6px 14px;
+  border-radius: 6px;
+  background: var(--accent);
+  color: white;
+  text-decoration: none;
+  transition: background var(--transition), transform var(--transition);
+}
+
+.cardBtn:hover {
+  background: var(--accent-hover);
+  transform: translateY(-1px);
+}
+
+.cardBtnOutline {
+  display: inline-flex;
+  align-items: center;
+  font-size: 12px;
+  font-weight: 500;
+  padding: 6px 14px;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--accent);
+  border: 1px solid var(--accent);
+  text-decoration: none;
+  transition: background var(--transition), transform var(--transition);
+}
+
+.cardBtnOutline:hover {
+  background: var(--accent-glow);
+  transform: translateY(-1px);
+}

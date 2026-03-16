@@ -1,0 +1,45 @@
+.toggle {
+  background: none;
+  border: none;
+  padding: 0;
+  display: flex;
+  align-items: center;
+}
+
+.track {
+  display: flex;
+  align-items: center;
+  width: 52px;
+  height: 28px;
+  background: var(--card-secondary);
+  border: 1px solid var(--border);
+  border-radius: 100px;
+  padding: 3px;
+  cursor: pointer;
+  transition: background var(--transition), border-color var(--transition);
+  position: relative;
+}
+
+.toggle:hover .track {
+  border-color: var(--accent);
+  background: var(--accent-glow);
+}
+
+.thumb {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  transition: transform var(--transition);
+  transform: translateX(0);
+  flex-shrink: 0;
+}
+
+.thumb.light {
+  transform: translateX(24px);
+  background: var(--accent);
+}

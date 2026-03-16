@@ -1,0 +1,109 @@
+.page {
+  min-height: calc(100vh - 64px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 24px;
+}
+
+.container {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  max-width: 520px;
+}
+
+.icon {
+  font-size: 56px;
+  line-height: 1;
+  color: #f59e0b;
+}
+
+.code {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-left: 3px solid #f59e0b;
+  border-radius: var(--radius);
+  padding: 14px 20px;
+  width: 100%;
+  text-align: left;
+}
+
+.codeLabel {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #f59e0b;
+  font-weight: 600;
+}
+
+.codeMono {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--text-muted);
+  word-break: break-all;
+}
+
+.title {
+  font-family: var(--font-display);
+  font-size: 32px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--text);
+}
+
+.desc {
+  font-size: 15px;
+  color: var(--text-muted);
+  line-height: 1.65;
+}
+
+.actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.retryBtn {
+  display: inline-flex;
+  padding: 11px 22px;
+  background: #f59e0b;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background var(--transition), transform var(--transition);
+  font-family: var(--font-body);
+}
+
+.retryBtn:hover {
+  background: #d97706;
+  transform: scale(1.02);
+}
+
+.homeBtn {
+  display: inline-flex;
+  padding: 11px 22px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  color: var(--text);
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background var(--transition), border-color var(--transition);
+}
+
+.homeBtn:hover {
+  background: var(--card-secondary);
+  border-color: var(--border-strong);
+}

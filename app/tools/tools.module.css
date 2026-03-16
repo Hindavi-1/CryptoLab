@@ -1,0 +1,77 @@
+.page {
+  min-height: calc(100vh - 64px);
+  padding: 64px 0 96px;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.header {
+  margin-bottom: 48px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--accent);
+}
+
+.title {
+  font-family: var(--font-display);
+  font-size: clamp(32px, 5vw, 48px);
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  color: var(--text);
+}
+
+.subtitle {
+  font-size: 16px;
+  color: var(--text-muted);
+  max-width: 540px;
+  line-height: 1.65;
+}
+
+.filters {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 32px;
+}
+
+.filter {
+  padding: 7px 18px;
+  border-radius: 100px;
+  border: 1px solid var(--border);
+  background: var(--card);
+  color: var(--text-muted);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background var(--transition), border-color var(--transition), color var(--transition);
+}
+
+.filter:hover {
+  background: var(--card-secondary);
+  border-color: var(--border-strong);
+  color: var(--text);
+}
+
+.filterActive {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: white;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+}
