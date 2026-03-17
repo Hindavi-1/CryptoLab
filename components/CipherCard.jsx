@@ -16,7 +16,7 @@ export default function CipherCard({ name, slug, description, category, tag }) {
         <Link href={`/cipher/${slug}`} className={styles.linkBtn}>
           View Theory
         </Link>
-        <Link href={`/tools?cipher=${slug}`} className={styles.primaryBtn}>
+        <Link href={`/cipher/${slug}`} className={styles.primaryBtn}>
           Open Tool →
         </Link>
       </div>

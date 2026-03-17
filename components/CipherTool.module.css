@@ -302,3 +302,204 @@
     justify-content: center;
   }
 }
+
+/* ─── Caesar Step-by-Step Visualizer ────────────────────────────────────────── */
+
+.stepsWrap {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  background: var(--card-secondary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  animation: stepsIn 0.25s ease;
+}
+
+@keyframes stepsIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.stepsHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.stepsTitle {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text);
+}
+
+.stepsSummary {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-subtle);
+}
+
+/* Alphabet wheel row */
+.wheelLegend {
+  display: flex;
+  gap: 2px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+  scrollbar-width: none;
+}
+
+.wheelLegend::-webkit-scrollbar { display: none; }
+
+.wheelLetter {
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text-subtle);
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+}
+
+/* Cards grid */
+.stepCards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+/* Base card */
+.stepCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  padding: 10px 12px;
+  min-width: 76px;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+/* Passthrough card (non-alpha) */
+.stepCardPass {
+  background: var(--card);
+  opacity: 0.55;
+  flex-direction: row;
+  gap: 6px;
+  padding: 8px 10px;
+  min-width: auto;
+}
+
+.stepCardPass .stepChar {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  color: var(--text-subtle);
+}
+
+/* Alpha card */
+.stepCardAlpha {
+  background: var(--card);
+}
+
+.stepCardAlpha:hover {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px var(--accent-glow);
+}
+
+.stepCharRow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.stepPlain {
+  font-family: var(--font-mono);
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--text);
+  line-height: 1;
+}
+
+.stepCipher {
+  font-family: var(--font-mono);
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--green);
+  line-height: 1;
+}
+
+.stepArrow {
+  font-size: 11px;
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.stepShiftBar {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.stepShiftLabel {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--text-subtle);
+}
+
+.stepShiftOp {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--accent);
+  background: var(--accent-glow);
+  border: 1px solid var(--accent);
+  border-radius: 3px;
+  padding: 1px 5px;
+}
+
+.stepFormula {
+  font-family: var(--font-mono);
+  font-size: 8.5px;
+  color: var(--text-subtle);
+  text-align: center;
+  line-height: 1.4;
+  max-width: 120px;
+  word-break: break-word;
+}
+
+.stepNote {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--text-subtle);
+}
+
+/* Show more/less toggle */
+.stepsToggle {
+  align-self: center;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--accent);
+  background: var(--accent-glow);
+  border: 1px solid var(--accent);
+  border-radius: 6px;
+  padding: 6px 16px;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.stepsToggle:hover {
+  background: var(--accent);
+  color: white;
+}

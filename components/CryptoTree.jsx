@@ -41,7 +41,7 @@ function TreeNode({ node, depth = 0 }) {
             <Link href={`/cipher/${node.slug}`} className={styles.cardBtn}>
               View Theory
             </Link>
-            <Link href={`/tools?cipher=${node.slug}`} className={styles.cardBtnOutline}>
+            <Link href={`/cipher/${node.slug}`} className={styles.cardBtnOutline}>
               Open Tool
             </Link>
             <Link href={`/simulation?cipher=${node.slug}`} className={styles.cardBtnOutline}>
