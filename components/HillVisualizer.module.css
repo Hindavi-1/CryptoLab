@@ -1,0 +1,353 @@
+/* components/HillVisualizer.module.css */
+.container {
+  margin-top: 2rem;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+  font-family: inherit;
+  color: var(--text);
+  box-shadow: var(--shadow-sm);
+}
+.header { text-align: center; margin-bottom: 2rem; }
+.title { margin: 0; font-size: 1.25rem; font-weight: 600; color: var(--text); }
+.subtitle { margin: 0.5rem 0 0; color: var(--text-subtle); font-size: 0.9rem; }
+
+.layout {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+@media (min-width: 900px) {
+  .layout { flex-direction: row; align-items: flex-start; }
+}
+
+/* Side Panel for Math */
+.sidePanel {
+  flex: 0 0 320px;
+  background: var(--card-secondary);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+  border: 1px solid var(--border);
+}
+
+.sectionTitle {
+  margin-top: 0;
+  margin-bottom: 1.2rem;
+  font-size: 1rem;
+  color: var(--text);
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 0.5rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.mathBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.mathLabel {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.mathHighlight {
+  background: var(--accent-glow);
+  color: var(--accent);
+  padding: 4px 10px;
+  border-radius: 6px;
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-weight: 600;
+  align-self: flex-start;
+  border: 1px solid var(--accent);
+}
+
+.formulaNote {
+  background: rgba(245, 158, 11, 0.1);
+  border: 1px solid rgba(245, 158, 11, 0.4);
+  color: #d97706;
+  padding: 1rem;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-family: var(--font-mono);
+  margin-top: 2rem;
+}
+[data-theme="dark"] .formulaNote { color: #f59e0b; }
+
+.inlineMatrix {
+  display: grid;
+  gap: 4px;
+  padding: 8px;
+  background: var(--bg-tertiary);
+  border-radius: 8px;
+  border: 1px solid var(--border-strong);
+  align-self: flex-start;
+}
+
+.matrixVal {
+  background: var(--card);
+  color: var(--text);
+  min-width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  font-family: var(--font-mono);
+  font-weight: 600;
+  font-size: 0.9rem;
+  border: 1px solid var(--border);
+}
+
+/* Steps Panel */
+.stepsPanel {
+  flex: 1;
+}
+
+.stepsList {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.stepCard {
+  background: var(--card-hover);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.vectorMapping {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+}
+
+.vectorCharGroup {
+  display: flex;
+  gap: 4px;
+}
+
+.charBox {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-tertiary);
+  color: var(--text-muted);
+  border-radius: 6px;
+  font-weight: 700;
+  font-size: 1.1rem;
+  font-family: var(--font-mono);
+  border: 1px solid var(--border-strong);
+}
+
+.charBoxCipher {
+  background: var(--green-bg);
+  color: var(--green);
+  border-color: var(--green);
+}
+
+.arrowIcon {
+  color: var(--text-subtle);
+  font-size: 1.5rem;
+}
+
+.divider {
+  height: 1px;
+  background: var(--border);
+  width: 100%;
+}
+
+.vectorMathArea {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.columnVector {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 8px;
+  background: var(--bg-tertiary);
+  border-radius: 8px;
+  border: 1px solid var(--border-strong);
+}
+
+.vecItem {
+  background: var(--card);
+  color: var(--text);
+  min-width: 40px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  font-family: var(--font-mono);
+  font-weight: 600;
+  font-size: 0.95rem;
+  border: 1px solid var(--border);
+}
+
+.vecItemCipher {
+  background: var(--green-bg);
+  color: var(--green);
+  border-color: var(--green);
+}
+
+.mathSign {
+  font-size: 1.5rem;
+  font-weight: 300;
+  color: var(--text-subtle);
+}
+
+.subFormulas {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  background: var(--card);
+  padding: 1rem;
+  border-radius: 8px;
+  border: 1px dashed var(--border-strong);
+}
+
+.subLine {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.resultBadge {
+  background: var(--green-bg);
+  color: var(--green);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-weight: 600;
+  border: 1px solid var(--green);
+}
+
+/* Error State */
+.errorContainer {
+  margin-top: 2rem;
+  background: rgba(220, 38, 38, 0.05);
+  border: 1px solid rgba(220, 38, 38, 0.3);
+  border-radius: var(--radius);
+  padding: 2rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.errorIcon {
+  font-size: 3rem;
+}
+
+.errorText {
+  color: #dc2626;
+  font-weight: 600;
+  margin: 0;
+  max-width: 400px;
+}
+[data-theme="dark"] .errorText { color: #f87171; }
+
+/* HillKeyInput module styles */
+.inputContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  margin-top: 0.2rem;
+  width: 100%;
+}
+
+.inputHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.inputLabel {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.toggleGroup {
+  display: flex;
+  background: var(--border);
+  padding: 3px;
+  border-radius: 8px;
+}
+
+.toggleBtn {
+  border: none;
+  background: transparent;
+  padding: 4px 12px;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-family: var(--font-body);
+  font-weight: 600;
+  color: var(--text-muted);
+  transition: all 0.2s;
+}
+
+.activeBtn {
+  background: var(--card);
+  color: var(--text);
+  box-shadow: var(--shadow-sm);
+}
+
+.matrixGridMain {
+  display: inline-grid;
+  gap: 8px;
+  background: var(--card-secondary);
+  padding: 1rem;
+  border-radius: var(--radius);
+  border: 1px solid var(--border-strong);
+  margin: 0;
+}
+
+.matrixCellInput {
+  width: 50px;
+  height: 50px;
+  text-align: center;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--card);
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: 1.1rem;
+  transition: all 0.2s;
+}
+
+.matrixCellInput:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-glow);
+}
+
+.inputHint {
+  font-size: 0.8rem;
+  color: var(--text-subtle);
+  margin: 0;
+  text-align: center;
+}

@@ -1,5 +1,4 @@
 import Link from "next/link";
-import CipherTool from "../../../components/CipherTool";
 import Flowchart from "../../../components/Flowchart";
 import styles from "./cipher.module.css";
 
@@ -142,18 +141,40 @@ const CIPHER_DATA = {
     year: "1929",
     origin: "Lester S. Hill",
     keySpace: "Large (matrix-based)",
-    securityRating: 2,
-    description: "A polygraphic substitution cipher based on linear algebra, using matrix multiplication to encrypt blocks of letters.",
+    securityRating: 3,
+    description: "A polygraphic substitution cipher based on linear algebra. It uses matrix multiplication to encrypt blocks of text mathematically, completely masking single-letter frequencies via strong diffusion.",
     howItWorks: [
-      "Convert letters to a vector",
-      "Multiply by key matrix (mod 26)",
-      "Convert back to letters",
+      "Convert letters to a numeric vector",
+      "Multiply by the n×n Key Matrix",
+      "Take Modulo 26 to get the Ciphertext",
     ],
-    example: null,
-    formula: "C = KP mod 26",
-    strengths: ["Diffusion across multiple letters", "Resists frequency analysis well"],
-    weaknesses: ["Vulnerable to known-plaintext attack"],
-    funFacts: ["First practical polygraphic cipher"],
+    encryptionSteps: [
+      "1. Alphabet Mapping: Parse the alphabet into standard indexing (A=0, B=1 ... Z=25).",
+      "2. Block Padding: Split the plaintext into column vectors of size n (identical dimension to the Key Matrix). Pad with 'X' if the final block vector is geometrically unstable.",
+      "3. Matrix Math: Compute the dot product between the n×n Key Matrix and each n×1 Plaintext Vector.",
+      "4. Modulo Resolution: Apply Modulo 26 math to the resulting vector coefficients, translating the values back seamlessly into Ciphertext characters."
+    ],
+    decryptionSteps: [
+      "1. Determinant Arithmetic: Calculate the strict algebraic determinant of the original Key Matrix |K|.",
+      "2. Modular Inverse Matrix: Determine the Multiplicative Inverse of the determinant modulo 26. (Note: the original determinant strictly MUST be coprime to 26 for inversion to exist!)",
+      "3. Adjugate Extraction: Calculate the Adjugate Matrix (the structural transpose of the cofactor matrix).",
+      "4. Synthesize Inverse Key (K⁻¹): Multiply the Adjugate Matrix by the Modular Inverse scalar value and resolve via Modulo 26 to formalize the geometric Inverse Key Matrix.",
+      "5. Decrypt Blocks: Dot multiply the finalized Inverse Key Matrix by the parsed Ciphertext vectors to completely retrieve the original Plaintext!"
+    ],
+    example: {
+      plain: "ACT",
+      key: "6,24,1, 13,16,10, 20,17,15",
+      cipher: "POH",
+      breakdown: [
+        { p: "A(0)", c: "P(15)", note: "Vector Math" },
+        { p: "C(2)", c: "O(14)", note: "Modulo 26" },
+        { p: "T(19)", c: "H(7)", note: "Matrix Det: 25" },
+      ]
+    },
+    formula: "Encrypt: C = K×P mod 26 | Decrypt: P = K⁻¹×C mod 26",
+    strengths: ["Strong diffusion across all letters in block", "Resists most frequency analysis"],
+    weaknesses: ["Easily broken by Known-Plaintext Attacks using Gauss-Jordan elimination"],
+    funFacts: ["First practical application of deeply mathematical continuous polygraphic encoding.", "Operates strictly in Z₂₆ linear arithmetic space."],
     toolCipher: "hill",
   },
   substitution: {
@@ -364,6 +385,36 @@ export default function CipherPage({ params }) {
               </ol>
               <Flowchart cipher={data.toolCipher} />
             </section>
+
+            {/* Detailed Encryption Steps */}
+            {data.encryptionSteps && (
+              <section className={styles.section}>
+                <h2 className={styles.sectionTitle}>Encryption Process</h2>
+                <ol className={styles.stepList}>
+                  {data.encryptionSteps.map((step, i) => (
+                    <li key={i} className={styles.stepItem}>
+                      <span className={styles.stepNum}>{i + 1}</span>
+                      <span className={styles.stepText}>{step}</span>
+                    </li>
+                  ))}
+                </ol>
+              </section>
+            )}
+
+            {/* Detailed Decryption Steps */}
+            {data.decryptionSteps && (
+              <section className={styles.section}>
+                <h2 className={styles.sectionTitle}>Decryption Process</h2>
+                <ol className={styles.stepList}>
+                  {data.decryptionSteps.map((step, i) => (
+                    <li key={i} className={styles.stepItem}>
+                      <span className={styles.stepNum}>{i + 1}</span>
+                      <span className={styles.stepText}>{step}</span>
+                    </li>
+                  ))}
+                </ol>
+              </section>
+            )}
 
             {/* Interactive Tool CTA */}
             <section className={styles.section}>

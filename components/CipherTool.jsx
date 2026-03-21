@@ -15,6 +15,8 @@ import {
   hashSHA256, decryptSHA256, getSHA256Steps
 } from "../lib/ciphers/index";
 import PlayfairVisualizer from "./PlayfairVisualizer";
+import HillKeyInput from "./HillKeyInput";
+import HillVisualizer from "./HillVisualizer";
 import styles from "./CipherTool.module.css";
 
 const CIPHERS = [
@@ -215,9 +217,7 @@ export default function CipherTool({ initialCipher = "caesar" }) {
           break;
         }
         case "hill": {
-          const vals = (key || "3,3,2,5").split(",").map(x => parseInt(x.trim()));
-          const matrix = [[vals[0], vals[1]], [vals[2], vals[3]]];
-          newSteps = getHillSteps(input, matrix, mode);
+          newSteps = [{ type: "hill_data", data: getHillSteps(input, key || "9,4,5,7", mode) }];
           break;
         }
         case "substitution":
@@ -309,16 +309,20 @@ export default function CipherTool({ initialCipher = "caesar" }) {
 
         <div className={styles.controlGroup}>
           <label className={styles.label}>{meta.keyLabel}</label>
-          <input
-            className={styles.input}
-            type={meta.keyType}
-            min="0"
-            max={meta.keyType === "number" ? "25" : undefined}
-            placeholder={meta.keyPlaceholder}
-            value={key}
-            onChange={(e) => setKey(e.target.value)}
-            disabled={meta.disabledKey}
-          />
+          {cipher === "hill" ? (
+             <HillKeyInput keyStr={key} onChange={setKey} />
+          ) : (
+            <input
+              className={styles.input}
+              type={meta.keyType}
+              min="0"
+              max={meta.keyType === "number" ? "25" : undefined}
+              placeholder={meta.keyPlaceholder}
+              value={key}
+              onChange={(e) => setKey(e.target.value)}
+              disabled={meta.disabledKey}
+            />
+          )}
         </div>
       </div>
 
@@ -412,6 +416,8 @@ export default function CipherTool({ initialCipher = "caesar" }) {
       {/* Step-by-step panel */}
       {steps.length > 0 && cipher === "playfair" ? (
         <PlayfairVisualizer stepsData={steps[0].data} mode={mode} />
+      ) : steps.length > 0 && cipher === "hill" ? (
+        <HillVisualizer stepsData={steps[0].data} mode={mode} />
       ) : steps.length > 0 && (
         <StepByStep steps={steps} mode={mode} cipher={cipher} />
       )}
