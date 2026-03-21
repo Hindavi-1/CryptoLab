@@ -3,7 +3,7 @@ import { useState } from "react";
 import {
   encryptCaesar, decryptCaesar, getCaesarSteps,
   encryptVigenere, decryptVigenere,
-  encryptPlayfair, decryptPlayfair,
+  encryptPlayfair, decryptPlayfair, getPlayfairSteps,
   encryptRailFence, decryptRailFence,
   encryptAffine, decryptAffine, getAffineSteps,
   encryptHill, decryptHill, getHillSteps,
@@ -14,6 +14,7 @@ import {
   hashMD5, decryptMD5, getMD5Steps,
   hashSHA256, decryptSHA256, getSHA256Steps
 } from "../lib/ciphers/index";
+import PlayfairVisualizer from "./PlayfairVisualizer";
 import styles from "./CipherTool.module.css";
 
 const CIPHERS = [
@@ -199,6 +200,12 @@ export default function CipherTool({ initialCipher = "caesar" }) {
       
       let newSteps = [];
       switch (cipher) {
+        case "vigenere":
+          newSteps = []; // Vigenere step-by-step generic logic can go here; omitted for brevity
+          break;
+        case "playfair":
+          newSteps = [{ type: "playfair_data", data: getPlayfairSteps(input, key || "KEYWORD", mode) }];
+          break;
         case "caesar":
           newSteps = getCaesarSteps(input, parseInt(key) || 3, mode);
           break;
@@ -403,7 +410,9 @@ export default function CipherTool({ initialCipher = "caesar" }) {
       </div>
 
       {/* Step-by-step panel */}
-      {steps.length > 0 && (
+      {steps.length > 0 && cipher === "playfair" ? (
+        <PlayfairVisualizer stepsData={steps[0].data} mode={mode} />
+      ) : steps.length > 0 && (
         <StepByStep steps={steps} mode={mode} cipher={cipher} />
       )}
     </div>

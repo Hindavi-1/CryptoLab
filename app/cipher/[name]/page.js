@@ -73,17 +73,28 @@ const CIPHER_DATA = {
     origin: "Charles Wheatstone",
     keySpace: "25! arrangements",
     securityRating: 2,
-    description: "The Playfair cipher encrypts pairs of letters (digraphs) using a 5x5 matrix, resisting single-letter frequency analysis.",
+    description: "The Playfair cipher encrypts pairs of letters (digraphs) using a 5x5 matrix. It was the first practical digraph substitution cipher, making it far more resistant to traditional single-letter frequency analysis.",
     howItWorks: [
-      "Create a 5x5 grid from a keyword",
-      "Split text into pairs",
-      "Apply row, column, or rectangle rules",
+      "Matrix Generation: Create a 5x5 grid starting with the keyword (no duplicates). Fill remaining spaces with the alphabet ('I'/'J' are merged).",
+      "Plaintext Parsing: Split text into pairs. If a pair contains matching letters, insert a bogus character (like 'X'). If length is odd, pad the end with 'X'.",
+      "ENCRYPTION - Rule 1 (Row): If both letters are in the same row, shift them 1 space Right (wrap around).",
+      "ENCRYPTION - Rule 2 (Column): If both letters are in the same column, shift them 1 space Down (wrap around).",
+      "ENCRYPTION - Rule 3 (Rectangle): Otherwise, swap each letter with the one in its own row but the other's column.",
+      "DECRYPTION: Reverse the Row and Col shifts (shift Left and Up, respectively). The Rectangle rule remains exactly the same."
     ],
-    example: null,
-    formula: "Digraph-based rules",
-    strengths: ["Harder to break than monoalphabetic", "No direct letter mapping"],
+    example: {
+      plain: "HIDE",
+      key: "SECRET",
+      cipher: "KNDC",
+      breakdown: [
+        { p: "HI", c: "KN", note: "Rectangle Rule" },
+        { p: "DE", c: "DC", note: "Row Shift Right" },
+      ]
+    },
+    formula: "Row → Right/Left | Col → Down/Up | Rect → Opp. Corners",
+    strengths: ["Destroys single-letter frequencies", "No direct letter mapping"],
     weaknesses: ["Vulnerable to digraph frequency analysis"],
-    funFacts: ["Used by JFK in WWII"],
+    funFacts: ["Used by JFK in WWII", "Named after Lord Playfair who promoted it"],
     toolCipher: "playfair",
   },
   railfence: {
