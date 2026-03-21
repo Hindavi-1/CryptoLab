@@ -482,3 +482,74 @@
   .stat:last-child { border-bottom: none; }
   .breakdown     { justify-content: center; }
 }
+
+/* Interactive Tool CTA */
+.toolCtaCard {
+  background: linear-gradient(135deg, var(--card), var(--bg-secondary));
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-lg);
+  padding: 32px 40px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 32px;
+  box-shadow: var(--shadow-md);
+  position: relative;
+  overflow: hidden;
+}
+
+.toolCtaCard::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: radial-gradient(circle at 100% 0%, var(--accent-glow) 0%, transparent 60%);
+  pointer-events: none;
+}
+
+.toolCtaContent {
+  flex: 1;
+}
+
+.toolCtaDesc {
+  color: var(--text-muted);
+  font-size: 15px;
+  line-height: 1.6;
+  max-width: 500px;
+}
+
+.toolCtaBtn {
+  display: inline-flex;
+  align-items: center;
+  background: var(--accent);
+  color: white;
+  padding: 14px 28px;
+  border-radius: var(--radius);
+  font-weight: 600;
+  font-family: var(--font-body);
+  text-decoration: none;
+  transition: all var(--transition);
+  box-shadow: 0 4px 14px var(--accent-glow-strong);
+  white-space: nowrap;
+  z-index: 1;
+}
+
+.toolCtaBtn:hover {
+  background: var(--accent-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px var(--accent-glow-strong);
+}
+
+.toolCtaIcon {
+  margin-right: 10px;
+  font-size: 1.2rem;
+}
+
+@media (max-width: 768px) {
+  .toolCtaCard {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 24px;
+    gap: 20px;
+  }
+}
+

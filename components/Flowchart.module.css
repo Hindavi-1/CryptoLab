@@ -1,11 +1,10 @@
 .wrapper {
   margin: 2.5rem 0;
   padding: 2.5rem 2rem;
-  background: linear-gradient(145deg, rgba(20,20,25,0.6) 0%, rgba(25,25,30,0.8) 100%);
-  border-radius: 16px;
-  border: 1px solid rgba(255,255,255,0.08);
-  box-shadow: 0 8px 32px rgba(0,0,0,0.4);
-  backdrop-filter: blur(12px);
+  background: var(--bg-secondary);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -15,13 +14,13 @@
 }
 
 .title {
-  font-size: 0.9rem;
+  font-size: 1rem;
   text-transform: uppercase;
   letter-spacing: 2px;
-  color: #8892b0;
+  color: var(--accent);
   margin-top: 0;
-  margin-bottom: 2rem;
-  font-weight: 600;
+  margin-bottom: 2.5rem;
+  font-weight: 700;
 }
 
 .flowRow {
@@ -41,59 +40,51 @@
 }
 
 .node {
-  background: rgba(230, 241, 255, 0.03);
-  border: 1px solid rgba(230, 241, 255, 0.1);
+  background: var(--card);
+  border: 1px solid var(--border-strong);
   padding: 1rem 1.5rem;
-  border-radius: 8px;
-  color: #ccd6f6;
-  font-weight: 500;
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  font-weight: 600;
   text-align: center;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  box-shadow: var(--shadow-sm);
   transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
   min-width: 160px;
 }
 
 .node:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(100,255,218,0.15);
-  border-color: rgba(100,255,218,0.3);
+  box-shadow: var(--shadow-md);
+  border-color: var(--accent);
 }
 
 .nodeKey {
-  background: rgba(200, 100, 255, 0.05);
-  border: 1px solid rgba(200, 100, 255, 0.2);
-  color: #c864ff;
+  background: var(--purple-glow);
+  border: 1px solid var(--purple);
+  color: var(--purple);
 }
 
 .nodeKey:hover {
-  box-shadow: 0 6px 16px rgba(200, 100, 255, 0.15);
-  border-color: rgba(200, 100, 255, 0.4);
+  border-color: var(--purple);
+  box-shadow: 0 4px 12px var(--purple-glow);
 }
 
 .process {
-  background: linear-gradient(135deg, rgba(100,255,218,0.1) 0%, rgba(100,255,218,0.02) 100%);
-  border: 1px solid rgba(100,255,218,0.2);
+  background: var(--accent-glow);
+  border: 1px solid var(--accent);
   padding: 1.5rem 2rem;
-  border-radius: 12px;
-  color: #64ffda;
+  border-radius: var(--radius);
+  color: var(--accent-hover);
   text-align: center;
-  box-shadow: 0 0 20px rgba(100,255,218,0.05), inset 0 0 10px rgba(100,255,218,0.05);
+  box-shadow: inset 0 0 10px var(--accent-glow);
   position: relative;
   overflow: hidden;
   margin: 0.5rem 0;
   min-width: 250px;
 }
 
-.process::before {
-  content: '';
-  position: absolute;
-  top: -50%;
-  left: -50%;
-  width: 200%;
-  height: 200%;
-  background: conic-gradient(transparent, transparent, transparent, rgba(100,255,218,0.15));
-  animation: rotate 4s linear infinite;
-  z-index: 0;
+[data-theme="dark"] .process {
+  color: var(--accent-light);
 }
 
 .processContent {
@@ -103,21 +94,21 @@
 
 .processTitle {
   display: block;
-  font-size: 1.1rem;
+  font-size: 1.15rem;
   letter-spacing: 0.5px;
+  font-weight: 700;
 }
 
 .processDetail {
   font-size: 0.85rem;
-  opacity: 0.8;
   margin-top: 0.6rem;
-  font-family: monospace;
-  color: #a8b2d1;
+  font-family: var(--font-mono);
+  color: var(--text-muted);
 }
 
 .arrow {
-  color: #495670;
-  font-size: 1.5rem;
+  color: var(--text-subtle);
+  font-size: 1.8rem;
   animation: pulse 2s infinite;
   display: flex;
   align-items: center;
@@ -128,12 +119,17 @@
   margin: 0;
 }
 
-@keyframes rotate {
-  100% { transform: rotate(360deg); }
+@keyframes pulse {
+  0% { opacity: 0.5; transform: translateY(-3px); }
+  50% { opacity: 1; transform: translateY(3px); }
+  100% { opacity: 0.5; transform: translateY(-3px); }
 }
 
-@keyframes pulse {
-  0% { opacity: 0.5; transform: translateY(-2px); }
-  50% { opacity: 1; transform: translateY(2px); }
-  100% { opacity: 0.5; transform: translateY(-2px); }
+.wrapper::after {
+  content: '';
+  position: absolute;
+  top: 0; right: 0; left: 0; bottom: 0;
+  background: radial-gradient(circle at 50% 50%, var(--accent-glow) 0%, transparent 60%);
+  opacity: 0.3;
+  pointer-events: none;
 }

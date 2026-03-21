@@ -365,10 +365,23 @@ export default function CipherPage({ params }) {
               <Flowchart cipher={data.toolCipher} />
             </section>
 
-            {/* Interactive Tool */}
+            {/* Interactive Tool CTA */}
             <section className={styles.section}>
-              <h2 className={styles.sectionTitle}>Interactive Tool</h2>
-              <CipherTool initialCipher={data.toolCipher} />
+              <div className={styles.toolCtaCard}>
+                <div className={styles.toolCtaContent}>
+                  <h2 className={styles.sectionTitle} style={{ borderBottom: 'none', paddingBottom: 0, marginBottom: '8px' }}>Interactive Toolkit</h2>
+                  <p className={styles.toolCtaDesc}>
+                    Want to encrypt your own messages and see the <strong>{data.name}</strong> algorithm in action? We've built an advanced interactive lab specifically for this setup.
+                  </p>
+                </div>
+                <Link href={`/tools/${data.toolCipher}`} className={styles.toolCtaBtn}>
+                  <span className={styles.toolCtaIcon}>⚡</span>
+                  Open Interactive Tool
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" style={{ marginLeft: '8px' }}>
+                    <path d="M5 12h14M12 5l7 7-7 7"/>
+                  </svg>
+                </Link>
+              </div>
             </section>
 
             {/* Formula */}
