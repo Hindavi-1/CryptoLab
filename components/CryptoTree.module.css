@@ -3,17 +3,32 @@
   background: var(--bg-secondary);
   border-top: 1px solid var(--border);
   border-bottom: 1px solid var(--border);
+  position: relative;
+  overflow: hidden;
+}
+
+.section::before {
+  content: '';
+  position: absolute;
+  top: -80px;
+  right: -80px;
+  width: 360px;
+  height: 360px;
+  background: radial-gradient(circle, var(--accent-glow) 0%, transparent 70%);
+  pointer-events: none;
 }
 
 .container {
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 24px;
+  position: relative;
+  z-index: 1;
 }
 
 .header {
   text-align: center;
-  margin-bottom: 60px;
+  margin-bottom: 56px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -23,10 +38,14 @@
 .eyebrow {
   font-family: var(--font-mono);
   font-size: 11px;
-  font-weight: 500;
+  font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.14em;
   color: var(--accent);
+  background: var(--accent-glow);
+  border: 1px solid var(--accent);
+  padding: 4px 14px;
+  border-radius: 100px;
 }
 
 .title {
@@ -40,18 +59,31 @@
 .subtitle {
   font-size: 15px;
   color: var(--text-muted);
-  max-width: 520px;
-  line-height: 1.65;
+  max-width: 500px;
+  line-height: 1.7;
 }
 
 .treeWrap {
-  max-width: 760px;
+  max-width: 780px;
   margin: 0 auto;
   background: var(--card);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
-  padding: 32px;
-  box-shadow: var(--shadow-md);
+  padding: 28px;
+  box-shadow: var(--shadow-lg);
+  position: relative;
+  overflow: hidden;
+}
+
+.treeWrap::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--accent), var(--purple), var(--green));
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
 }
 
 .nodeWrapper {
@@ -64,11 +96,12 @@
   align-items: center;
   gap: 10px;
   padding: 9px 12px;
-  border-radius: 8px;
+  border-radius: 9px;
   cursor: pointer;
-  transition: background var(--transition), color var(--transition);
-  margin-left: calc(var(--depth, 0) * 24px);
+  transition: background var(--transition), color var(--transition), transform var(--transition);
+  margin-left: calc(var(--depth, 0) * 22px);
   user-select: none;
+  position: relative;
 }
 
 .branch {
@@ -80,11 +113,12 @@
 
 .branch:hover {
   background: var(--card-secondary);
+  transform: translateX(2px);
 }
 
 .leaf {
   color: var(--text-muted);
-  font-size: 14px;
+  font-size: 13.5px;
   font-family: var(--font-mono);
   font-weight: 400;
 }
@@ -92,6 +126,7 @@
 .leaf:hover {
   background: var(--accent-glow);
   color: var(--accent);
+  transform: translateX(3px);
 }
 
 .selected {
@@ -106,8 +141,13 @@
   align-items: center;
   justify-content: center;
   color: var(--text-subtle);
-  transition: transform var(--transition);
+  transition: transform var(--transition), color var(--transition);
   flex-shrink: 0;
+}
+
+.branch:hover .arrow,
+.branch:focus .arrow {
+  color: var(--accent);
 }
 
 .arrowOpen {
@@ -125,15 +165,18 @@
   background: var(--border-strong);
   flex-shrink: 0;
   margin-left: 6px;
+  transition: background var(--transition), box-shadow var(--transition);
 }
 
 .leaf.selected .dot,
 .leaf:hover .dot {
   background: var(--accent);
+  box-shadow: 0 0 6px var(--accent-glow);
 }
 
 .nodeLabel {
   flex: 1;
+  line-height: 1.4;
 }
 
 .badge {
@@ -144,47 +187,55 @@
   border: 1px solid var(--border);
   padding: 2px 8px;
   border-radius: 4px;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.04em;
+  transition: border-color var(--transition), color var(--transition);
+}
+
+.leaf:hover .badge,
+.leaf.selected .badge {
+  border-color: var(--accent);
+  color: var(--accent);
 }
 
 .children {
   position: relative;
-  margin-left: calc(var(--depth, 0) * 24px + 22px);
+  margin-left: calc(var(--depth, 0) * 22px + 21px);
 }
 
 .children::before {
   content: '';
   position: absolute;
   left: -1px;
-  top: 4px;
-  bottom: 4px;
+  top: 6px;
+  bottom: 6px;
   width: 1px;
-  background: var(--border);
+  background: linear-gradient(to bottom, var(--accent-glow), var(--border), transparent);
 }
 
 /* Leaf card */
 .card {
-  margin-left: calc(var(--depth, 0) * 24px + 12px);
+  margin-left: calc(var(--depth, 0) * 22px + 12px);
   margin-top: 4px;
-  margin-bottom: 8px;
-  background: var(--card-secondary);
+  margin-bottom: 10px;
+  background: linear-gradient(135deg, var(--card-secondary) 0%, var(--card) 100%);
   border: 1px solid var(--border);
   border-left: 3px solid var(--accent);
-  border-radius: 8px;
-  padding: 16px;
-  animation: slideIn 0.2s ease;
+  border-radius: 10px;
+  padding: 16px 18px;
+  animation: slideIn 0.22s ease both;
+  box-shadow: var(--shadow-sm);
 }
 
 @keyframes slideIn {
-  from { opacity: 0; transform: translateY(-8px); }
-  to { opacity: 1; transform: translateY(0); }
+  from { opacity: 0; transform: translateY(-8px) scale(0.98); }
+  to   { opacity: 1; transform: translateY(0)  scale(1); }
 }
 
 .cardDesc {
   font-size: 13px;
-  line-height: 1.6;
+  line-height: 1.65;
   color: var(--text-muted);
-  margin-bottom: 12px;
+  margin-bottom: 14px;
 }
 
 .cardActions {
@@ -199,16 +250,18 @@
   font-size: 12px;
   font-weight: 600;
   padding: 6px 14px;
-  border-radius: 6px;
+  border-radius: 7px;
   background: var(--accent);
   color: white;
   text-decoration: none;
-  transition: background var(--transition), transform var(--transition);
+  transition: background var(--transition), transform var(--transition), box-shadow var(--transition);
+  box-shadow: 0 2px 8px var(--accent-glow);
 }
 
 .cardBtn:hover {
   background: var(--accent-hover);
   transform: translateY(-1px);
+  box-shadow: 0 4px 14px var(--accent-glow-strong);
 }
 
 .cardBtnOutline {
@@ -217,7 +270,7 @@
   font-size: 12px;
   font-weight: 500;
   padding: 6px 14px;
-  border-radius: 6px;
+  border-radius: 7px;
   background: transparent;
   color: var(--accent);
   border: 1px solid var(--accent);

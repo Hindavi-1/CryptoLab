@@ -24,11 +24,11 @@ const CIPHERS = [
   { value: "affine",    label: "Affine Cipher",    keyLabel: "a, b (e.g. 5,8)", keyType: "text",   keyPlaceholder: "5,8" },
   { value: "hill",      label: "Hill Cipher",      keyLabel: "a,b,c,d (2x2)",   keyType: "text",   keyPlaceholder: "3,3,2,5" },
   { value: "substitution", label: "Substitution",  keyLabel: "26-char Alphabet", keyType: "text",   keyPlaceholder: "QWERTYUIOPASDFGHJKLZXCVBNM" },
-  { value: "des",       label: "DES (Demo)",       keyLabel: "Key (1 char)",    keyType: "text",   keyPlaceholder: "K" },
-  { value: "aes",       label: "AES (Demo)",       keyLabel: "Key (1 char)",    keyType: "text",   keyPlaceholder: "K" },
-  { value: "rsa",       label: "RSA (Demo)",       keyLabel: "e, n (Encrypt) or d, n (Decrypt)", keyType: "text", keyPlaceholder: "17,3233" },
-  { value: "md5",       label: "MD5 (Demo)",       keyLabel: "None",            keyType: "text",   keyPlaceholder: "N/A", disabledKey: true },
-  { value: "sha256",    label: "SHA-256 (Demo)",   keyLabel: "None",            keyType: "text",   keyPlaceholder: "N/A", disabledKey: true },
+  { value: "des",       label: "DES",              keyLabel: "Passphrase",      keyType: "text",   keyPlaceholder: "SecretKey" },
+  { value: "aes",       label: "AES",              keyLabel: "Passphrase",      keyType: "text",   keyPlaceholder: "SecretKey" },
+  { value: "rsa",       label: "RSA (Educational)",keyLabel: "e, n (Encrypt) or d, n (Decrypt)", keyType: "text", keyPlaceholder: "17,3233" },
+  { value: "md5",       label: "MD5",              keyLabel: "None",            keyType: "text",   keyPlaceholder: "N/A", disabledKey: true },
+  { value: "sha256",    label: "SHA-256",          keyLabel: "None",            keyType: "text",   keyPlaceholder: "N/A", disabledKey: true },
 ];
 
 function runCipher(cipher, mode, text, key) {
@@ -63,11 +63,11 @@ function runCipher(cipher, mode, text, key) {
       return mode === "encrypt" ? encryptSubstitution(text, k) : decryptSubstitution(text, k);
     }
     case "des": {
-      const k = key || "K";
+      const k = key || "SecretKey";
       return mode === "encrypt" ? encryptDES(text, k) : decryptDES(text, k);
     }
     case "aes": {
-      const k = key || "K";
+      const k = key || "SecretKey";
       return mode === "encrypt" ? encryptAES(text, k) : decryptAES(text, k);
     }
     case "rsa": {
@@ -217,10 +217,10 @@ export default function CipherTool({ initialCipher = "caesar" }) {
           newSteps = getSubstitutionSteps(input, key || "QWERTYUIOPASDFGHJKLZXCVBNM", mode);
           break;
         case "des":
-          newSteps = getDESSteps(input, key || "K", mode);
+          newSteps = getDESSteps(input, key || "SecretKey", mode);
           break;
         case "aes":
-          newSteps = getAESSteps(input, key || "K", mode);
+          newSteps = getAESSteps(input, key || "SecretKey", mode);
           break;
         case "rsa": {
           const [v1, v2] = (key || "17,3233").split(",").map(x => BigInt(x.trim()));

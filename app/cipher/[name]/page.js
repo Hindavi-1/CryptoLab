@@ -1,5 +1,6 @@
 import Link from "next/link";
 import CipherTool from "../../../components/CipherTool";
+import Flowchart from "../../../components/Flowchart";
 import styles from "./cipher.module.css";
 
 const CIPHER_DATA = {
@@ -350,6 +351,7 @@ export default function CipherPage({ params }) {
                   </li>
                 ))}
               </ol>
+              <Flowchart cipher={data.toolCipher} />
             </section>
 
             {/* Interactive Tool */}

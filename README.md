@@ -88,23 +88,23 @@ cryptolab/
 ## Features
 
 ### Pages
-| Route | Description |
-|-------|-------------|
-| `/` | Homepage with animated Hero and interactive CryptoTree |
-| `/tools` | Grid of all cipher cards |
+| Route             | Description                                               |
+|-------------------|-----------------------------------------------------------|
+| `/`               | Homepage with animated Hero and interactive CryptoTree    |
+| `/tools`          | Grid of all cipher cards                                  |
 | `/tools/[cipher]` | Dedicated tool for Caesar, Vigenère, Playfair, Rail Fence |
-| `/cipher/[name]` | Theory pages for all 8 ciphers |
-| `/simulation` | Step-by-step animation of cipher operations |
-| `/challenges` | 5 graded challenges (Easy → Expert) |
-| `/compare` | Algorithm comparison table |
+| `/cipher/[name]`  | Theory pages for all 8 ciphers                            |
+| `/simulation`     | Step-by-step animation of cipher operations               |
+| `/challenges`     | 5 graded challenges (Easy → Expert)                       |
+| `/compare`        | Algorithm comparison table                                |
 
 ### Implemented Cipher Logic
-| Cipher | Encrypt | Decrypt |
-|--------|---------|---------|
-| Caesar | ✓ | ✓ |
-| Vigenère | ✓ | ✓ |
-| Playfair | ✓ | ✓ |
-| Rail Fence | ✓ | ✓ |
+| Cipher     | Encrypt | Decrypt |
+|----------  |---------|---------|
+| Caesar     | ✓       | ✓      |
+| Vigenère   | ✓       | ✓      |
+| Playfair   | ✓       | ✓      |
+| Rail Fence | ✓       | ✓      |
 
 ### Components
 - **Hero** — animated encryption loop (HELLO ↔ KHOOR) with JS state machine
