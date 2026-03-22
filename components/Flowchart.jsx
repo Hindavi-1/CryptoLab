@@ -63,22 +63,37 @@ export default function Flowchart({ cipher }) {
         </div>
       );
     } else {
-      let detail = "SubBytes, ShiftRows, MixColumns, AddRoundKey";
+      let roundsText = cipherLower === 'aes' ? "10/12/14 Rounds of SPN" : `${cipher.toUpperCase()} Rounds`;
+      let detail = cipherLower === 'aes' ? "SubBytes, ShiftRows, MixColumns, AddRoundKey" : "Substitution / Permutation";
       content = (
         <div className={styles.flowCol}>
           <div className={styles.flowRow}>
-            <div className={styles.node}>Plaintext Block</div>
-            <div className={`${styles.node} ${styles.nodeKey}`}>Symmetric Key</div>
+            <div className={styles.node} style={{flex:1}}>128-bit Plaintext State</div>
+            <div className={`${styles.node} ${styles.nodeKey}`} style={{flex:1}}>Key (128/192/256 bits)</div>
+          </div>
+          <div className={`${styles.arrow} ${styles.arrowDown}`}>↓</div>
+          <div className={styles.process} style={{background: 'var(--surface-3)', border: '1px dashed var(--border)'}}>
+            <div className={styles.processContent}>
+              <strong className={styles.processTitle}>Initial Round Key Addition</strong>
+              <div className={styles.processDetail}>AddRoundKey</div>
+            </div>
           </div>
           <div className={`${styles.arrow} ${styles.arrowDown}`}>↓</div>
           <div className={styles.process}>
             <div className={styles.processContent}>
-              <strong className={styles.processTitle}>{cipher.toUpperCase()} Rounds</strong>
+              <strong className={styles.processTitle}>{roundsText}</strong>
               <div className={styles.processDetail}>{detail}</div>
             </div>
           </div>
           <div className={`${styles.arrow} ${styles.arrowDown}`}>↓</div>
-          <div className={styles.node}>Ciphertext Block</div>
+          <div className={styles.process} style={{background: 'var(--surface-3)', border: '1px dashed var(--border)'}}>
+            <div className={styles.processContent}>
+              <strong className={styles.processTitle}>Final Round</strong>
+              <div className={styles.processDetail}>SubBytes, ShiftRows, AddRoundKey (No MixColumns)</div>
+            </div>
+          </div>
+          <div className={`${styles.arrow} ${styles.arrowDown}`}>↓</div>
+          <div className={styles.node}>128-bit Ciphertext State</div>
         </div>
       );
     }

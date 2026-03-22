@@ -21,6 +21,7 @@ import HillVisualizer from "./HillVisualizer";
 import VigenereVisualizer from "./VigenereVisualizer";
 import ColumnarVisualizer from "./ColumnarVisualizer";
 import DESVisualizer from "./DESVisualizer";
+import AESVisualizer from "./AESVisualizer";
 import styles from "./CipherTool.module.css";
 
 const CIPHERS = [
@@ -39,7 +40,7 @@ const CIPHERS = [
   { value: "hill", label: "Hill Cipher", keyLabel: "a,b,c,d (2x2)", keyType: "text", keyPlaceholder: "3,3,2,5" },
   { value: "substitution", label: "Substitution", keyLabel: "26-char Alphabet", keyType: "text", keyPlaceholder: "QWERTYUIOPASDFGHJKLZXCVBNM" },
   { value: "des", label: "DES", keyLabel: "Key (16-char Hex)", keyType: "text", keyPlaceholder: "0123456789ABCDEF" },
-  { value: "aes", label: "AES", keyLabel: "Passphrase", keyType: "text", keyPlaceholder: "SecretKey" },
+  { value: "aes", label: "AES", keyLabel: "Key (Hex)", keyType: "text", keyPlaceholder: "0123456789ABCDEF..." },
   { value: "rsa", label: "RSA (Educational)", keyLabel: "e, n (Encrypt) or d, n (Decrypt)", keyType: "text", keyPlaceholder: "17,3233" },
   { value: "md5", label: "MD5", keyLabel: "None", keyType: "text", keyPlaceholder: "N/A", disabledKey: true },
   { value: "sha256", label: "SHA-256", keyLabel: "None", keyType: "text", keyPlaceholder: "N/A", disabledKey: true },
@@ -87,8 +88,10 @@ function runCipher(cipher, mode, text, key, opts = {}) {
         : decryptDES(text, k, { mode: opts.desMode, ivHex: opts.desIV, inputFormat: opts.desFormat });
     }
     case "aes": {
-      const k = key || "SecretKey";
-      return mode === "encrypt" ? encryptAES(text, k) : decryptAES(text, k);
+      const k = key || "0".repeat(opts.aesKeySize / 4);
+      return mode === "encrypt" 
+        ? encryptAES(text, k, { mode: opts.aesMode, ivHex: opts.aesIV, outputFormat: opts.aesFormat, keySize: opts.aesKeySize }) 
+        : decryptAES(text, k, { mode: opts.aesMode, ivHex: opts.aesIV, inputFormat: opts.aesFormat, keySize: opts.aesKeySize });
     }
     case "rsa": {
       const [v1, v2] = (key || "17,3233").split(",").map(x => BigInt(x.trim()));
@@ -206,6 +209,10 @@ export default function CipherTool({ initialCipher = "caesar" }) {
   const [desMode, setDesMode] = useState("ECB");
   const [desIV, setDesIV] = useState("");
   const [desFormat, setDesFormat] = useState("base64");
+  const [aesMode, setAesMode] = useState("ECB");
+  const [aesIV, setAesIV] = useState("");
+  const [aesFormat, setAesFormat] = useState("base64");
+  const [aesKeySize, setAesKeySize] = useState(128);
   const [output, setOutput] = useState("");
   const [steps, setSteps] = useState([]);
   const [error, setError] = useState("");
@@ -217,7 +224,10 @@ export default function CipherTool({ initialCipher = "caesar" }) {
     if (!input.trim()) return;
     setError("");
     try {
-      const result = runCipher(cipher, mode, input, key, { desMode, desIV, desFormat });
+      const result = runCipher(cipher, mode, input, key, { 
+        desMode, desIV, desFormat, 
+        aesMode, aesIV, aesFormat, aesKeySize 
+      });
       setOutput(result);
 
       let newSteps = [];
@@ -249,7 +259,7 @@ export default function CipherTool({ initialCipher = "caesar" }) {
           newSteps = getDESSteps(input, key || "0123456789ABCDEF", mode, { blockMode: desMode, ivHex: desIV, format: desFormat });
           break;
         case "aes":
-          newSteps = getAESSteps(input, key || "SecretKey", mode);
+          newSteps = getAESSteps(input, key || "0".repeat(aesKeySize / 4), mode, { blockMode: aesMode, ivHex: aesIV, format: aesFormat, keySize: aesKeySize });
           break;
         case "rsa": {
           const [v1, v2] = (key || "17,3233").split(",").map(x => BigInt(x.trim()));
@@ -358,6 +368,42 @@ export default function CipherTool({ initialCipher = "caesar" }) {
             </p>
           )}
         </div>
+
+        {cipher === "aes" && (
+          <>
+            <div className={styles.controlGroup}>
+              <label className={styles.label}>Key Size</label>
+              <select className={styles.select} value={aesKeySize} onChange={(e) => { setAesKeySize(parseInt(e.target.value)); setOutput(""); setSteps([]); setError(""); }}>
+                <option value={128}>128-bit (32 hex chars)</option>
+                <option value={192}>192-bit (48 hex chars)</option>
+                <option value={256}>256-bit (64 hex chars)</option>
+              </select>
+            </div>
+            <div className={styles.controlGroup}>
+              <label className={styles.label}>Block Mode</label>
+              <select className={styles.select} value={aesMode} onChange={(e) => { setAesMode(e.target.value); setOutput(""); setSteps([]); setError(""); }}>
+                <option value="ECB">ECB</option>
+                <option value="CBC">CBC</option>
+                <option value="CFB">CFB</option>
+                <option value="OFB">OFB</option>
+                <option value="CTR">CTR</option>
+              </select>
+            </div>
+            {aesMode !== "ECB" && (
+              <div className={styles.controlGroup}>
+                <label className={styles.label}>IV (32-char Hex)</label>
+                <input className={styles.input} type="text" placeholder="e.g. 0123..." value={aesIV} onChange={(e) => setAesIV(e.target.value)} />
+              </div>
+            )}
+            <div className={styles.controlGroup}>
+              <label className={styles.label}>Output Format</label>
+              <select className={styles.select} value={aesFormat} onChange={(e) => { setAesFormat(e.target.value); setOutput(""); setSteps([]); setError(""); }}>
+                <option value="base64">Base64</option>
+                <option value="hex">Hexadecimal</option>
+              </select>
+            </div>
+          </>
+        )}
 
         {cipher === "des" && (
           <>
@@ -486,6 +532,8 @@ export default function CipherTool({ initialCipher = "caesar" }) {
         <ColumnarVisualizer data={steps[0].data} />
       ) : steps.length > 0 && cipher === "des" ? (
         <DESVisualizer data={steps[0].data} />
+      ) : steps.length > 0 && cipher === "aes" ? (
+        <AESVisualizer data={steps[0].data} />
       ) : steps.length > 0 && (
         <StepByStep steps={steps} mode={mode} cipher={cipher} />
       )}
