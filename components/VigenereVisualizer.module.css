@@ -1,0 +1,323 @@
+.wrap {
+  margin-top: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  animation: fadeUp 0.4s ease both;
+}
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ── Header ── */
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.title {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--text);
+  font-family: var(--font-display);
+}
+
+.subtitle {
+  font-size: 12px;
+  color: var(--text-subtle);
+  font-family: var(--font-mono);
+}
+
+/* ── Alignment Strip ── */
+.alignStrip {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px 16px;
+}
+
+.stripLabel {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-subtle);
+  min-width: 60px;
+}
+
+.stripLetters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.stripLetter {
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-mono);
+  font-size: 14px;
+  font-weight: 700;
+  border-radius: 7px;
+  background: var(--card-secondary);
+  border: 1px solid var(--border);
+  color: var(--text);
+  transition: all 0.15s;
+}
+
+.stripKey {
+  color: var(--accent);
+  background: var(--accent-glow);
+  border-color: var(--accent);
+}
+
+.stripResult {
+  color: var(--green);
+  background: var(--green-bg);
+  border-color: var(--green);
+}
+
+.stripPass {
+  opacity: 0.35;
+  font-style: italic;
+}
+
+/* ── Step Cards ── */
+.stepsRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.stepCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: 10px 14px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.18s;
+  min-width: 60px;
+}
+
+.stepCard:hover {
+  border-color: var(--accent);
+  background: var(--accent-glow);
+  transform: translateY(-2px);
+}
+
+.stepCardActive {
+  border-color: var(--accent);
+  background: var(--accent-glow);
+  box-shadow: 0 0 0 2px var(--accent-glow-strong);
+}
+
+.scPlain {
+  font-family: var(--font-mono);
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.scArrow {
+  font-size: 11px;
+  color: var(--accent);
+}
+
+.scResult {
+  font-family: var(--font-mono);
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--green);
+}
+
+.scKey {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-subtle);
+}
+
+/* ── Step Detail ── */
+.stepDetail {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.detailBox {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 18px 22px;
+}
+
+.detailRow {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.detailLabel {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-subtle);
+}
+
+.detailVal {
+  font-family: var(--font-mono);
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.detailFormula {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 600;
+  background: linear-gradient(90deg, var(--accent), var(--purple));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.detailResult {
+  color: var(--green);
+}
+
+.lookupHint {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  color: var(--text-muted);
+  background: var(--card-secondary);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px 16px;
+  font-family: var(--font-mono);
+}
+
+.hintIcon {
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+/* ── Vigenère Table ── */
+.tableWrap {
+  overflow-x: auto;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+  background: var(--card);
+}
+
+.vigTable {
+  border-collapse: collapse;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  min-width: 640px;
+}
+
+.cornerCell {
+  background: var(--card-secondary);
+  color: var(--text-subtle);
+  font-size: 9px;
+  padding: 6px;
+  text-align: center;
+  border-right: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  left: 0;
+  z-index: 3;
+}
+
+.headerCell {
+  padding: 5px 4px;
+  text-align: center;
+  color: var(--text-subtle);
+  font-weight: 700;
+  border-bottom: 1px solid var(--border);
+  background: var(--card-secondary);
+  transition: background 0.15s, color 0.15s;
+}
+
+.headerCell.colHighlight {
+  background: var(--accent);
+  color: white;
+}
+
+.rowHeader {
+  padding: 5px 7px;
+  text-align: center;
+  font-weight: 700;
+  color: var(--text-subtle);
+  border-right: 1px solid var(--border);
+  background: var(--card-secondary);
+  position: sticky;
+  left: 0;
+  z-index: 2;
+  transition: background 0.15s, color 0.15s;
+}
+
+.rowHeader.rowHighlight {
+  background: var(--purple, #7c3aed);
+  color: white;
+}
+
+.cell {
+  padding: 5px 4px;
+  text-align: center;
+  color: var(--text-muted);
+  transition: background 0.1s, color 0.1s;
+}
+
+.cellRowHl {
+  background: rgba(124, 58, 237, 0.1);
+  color: var(--text);
+}
+
+.cellColHl {
+  background: var(--accent-glow);
+  color: var(--accent);
+}
+
+.cellActive {
+  background: linear-gradient(135deg, var(--accent), var(--purple, #7c3aed)) !important;
+  /*  */
+  color: white !important;
+  font-weight: 700;
+  font-size: 12px;
+  border-radius: 3px;
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.2);
+}
+
+@media (max-width: 600px) {
+  .detailBox {
+    grid-template-columns: 1fr;
+  }
+}

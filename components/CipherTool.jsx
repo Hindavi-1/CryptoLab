@@ -2,7 +2,7 @@
 import { useState } from "react";
 import {
   encryptCaesar, decryptCaesar, getCaesarSteps,
-  encryptVigenere, decryptVigenere,
+  encryptVigenere, decryptVigenere, getVigenereSteps,
   encryptPlayfair, decryptPlayfair, getPlayfairSteps,
   encryptRailFence, decryptRailFence,
   encryptAffine, decryptAffine, getAffineSteps,
@@ -17,21 +17,22 @@ import {
 import PlayfairVisualizer from "./PlayfairVisualizer";
 import HillKeyInput from "./HillKeyInput";
 import HillVisualizer from "./HillVisualizer";
+import VigenereVisualizer from "./VigenereVisualizer";
 import styles from "./CipherTool.module.css";
 
 const CIPHERS = [
-  { value: "caesar",    label: "Caesar Cipher",    keyLabel: "Shift (0–25)",    keyType: "number", keyPlaceholder: "3" },
-  { value: "vigenere",  label: "Vigenère Cipher",  keyLabel: "Keyword",         keyType: "text",   keyPlaceholder: "SECRET" },
-  { value: "playfair",  label: "Playfair Cipher",  keyLabel: "Keyword",         keyType: "text",   keyPlaceholder: "KEYWORD" },
+  { value: "caesar", label: "Caesar Cipher", keyLabel: "Shift (0–25)", keyType: "number", keyPlaceholder: "3" },
+  { value: "vigenere", label: "Vigenère Cipher", keyLabel: "Keyword", keyType: "text", keyPlaceholder: "KEY" },
+  { value: "playfair", label: "Playfair Cipher", keyLabel: "Keyword", keyType: "text", keyPlaceholder: "KEYWORD" },
   { value: "railfence", label: "Rail Fence Cipher", keyLabel: "Number of Rails", keyType: "number", keyPlaceholder: "3" },
-  { value: "affine",    label: "Affine Cipher",    keyLabel: "a, b (e.g. 5,8)", keyType: "text",   keyPlaceholder: "5,8" },
-  { value: "hill",      label: "Hill Cipher",      keyLabel: "a,b,c,d (2x2)",   keyType: "text",   keyPlaceholder: "3,3,2,5" },
-  { value: "substitution", label: "Substitution",  keyLabel: "26-char Alphabet", keyType: "text",   keyPlaceholder: "QWERTYUIOPASDFGHJKLZXCVBNM" },
-  { value: "des",       label: "DES",              keyLabel: "Passphrase",      keyType: "text",   keyPlaceholder: "SecretKey" },
-  { value: "aes",       label: "AES",              keyLabel: "Passphrase",      keyType: "text",   keyPlaceholder: "SecretKey" },
-  { value: "rsa",       label: "RSA (Educational)",keyLabel: "e, n (Encrypt) or d, n (Decrypt)", keyType: "text", keyPlaceholder: "17,3233" },
-  { value: "md5",       label: "MD5",              keyLabel: "None",            keyType: "text",   keyPlaceholder: "N/A", disabledKey: true },
-  { value: "sha256",    label: "SHA-256",          keyLabel: "None",            keyType: "text",   keyPlaceholder: "N/A", disabledKey: true },
+  { value: "affine", label: "Affine Cipher", keyLabel: "a, b (e.g. 5,8)", keyType: "text", keyPlaceholder: "5,8" },
+  { value: "hill", label: "Hill Cipher", keyLabel: "a,b,c,d (2x2)", keyType: "text", keyPlaceholder: "3,3,2,5" },
+  { value: "substitution", label: "Substitution", keyLabel: "26-char Alphabet", keyType: "text", keyPlaceholder: "QWERTYUIOPASDFGHJKLZXCVBNM" },
+  { value: "des", label: "DES", keyLabel: "Passphrase", keyType: "text", keyPlaceholder: "SecretKey" },
+  { value: "aes", label: "AES", keyLabel: "Passphrase", keyType: "text", keyPlaceholder: "SecretKey" },
+  { value: "rsa", label: "RSA (Educational)", keyLabel: "e, n (Encrypt) or d, n (Decrypt)", keyType: "text", keyPlaceholder: "17,3233" },
+  { value: "md5", label: "MD5", keyLabel: "None", keyType: "text", keyPlaceholder: "N/A", disabledKey: true },
+  { value: "sha256", label: "SHA-256", keyLabel: "None", keyType: "text", keyPlaceholder: "N/A", disabledKey: true },
 ];
 
 function runCipher(cipher, mode, text, key) {
@@ -144,7 +145,7 @@ function StepByStep({ steps, mode, cipher }) {
                 <span className={styles.stepArrow}>→</span>
                 <span className={styles.stepCipher}>{step.output}</span>
               </div>
-              
+
               {cipher === "caesar" && step.inputCode !== undefined && (
                 <div className={styles.stepShiftBar}>
                   <span className={styles.stepShiftLabel}>
@@ -158,7 +159,7 @@ function StepByStep({ steps, mode, cipher }) {
                   </span>
                 </div>
               )}
-              
+
               <span className={styles.stepFormula}>{step.formula}</span>
             </div>
           )
@@ -183,12 +184,12 @@ function StepByStep({ steps, mode, cipher }) {
 
 export default function CipherTool({ initialCipher = "caesar" }) {
   const [cipher, setCipher] = useState(initialCipher);
-  const [mode, setMode]     = useState("encrypt");
-  const [input, setInput]   = useState("");
-  const [key, setKey]       = useState("");
+  const [mode, setMode] = useState("encrypt");
+  const [input, setInput] = useState("");
+  const [key, setKey] = useState("");
   const [output, setOutput] = useState("");
-  const [steps, setSteps]   = useState([]);
-  const [error, setError]   = useState("");
+  const [steps, setSteps] = useState([]);
+  const [error, setError] = useState("");
   const [copied, setCopied] = useState(false);
 
   const meta = CIPHERS.find((c) => c.value === cipher) || CIPHERS[0];
@@ -199,12 +200,14 @@ export default function CipherTool({ initialCipher = "caesar" }) {
     try {
       const result = runCipher(cipher, mode, input, key);
       setOutput(result);
-      
+
       let newSteps = [];
       switch (cipher) {
-        case "vigenere":
-          newSteps = []; // Vigenere step-by-step generic logic can go here; omitted for brevity
+        case "vigenere": {
+          const vk = key || "KEY";
+          newSteps = [{ type: "vigenere_data", data: getVigenereSteps(input.toUpperCase(), vk, mode) }];
           break;
+        }
         case "playfair":
           newSteps = [{ type: "playfair_data", data: getPlayfairSteps(input, key || "KEYWORD", mode) }];
           break;
@@ -310,7 +313,7 @@ export default function CipherTool({ initialCipher = "caesar" }) {
         <div className={styles.controlGroup}>
           <label className={styles.label}>{meta.keyLabel}</label>
           {cipher === "hill" ? (
-             <HillKeyInput keyStr={key} onChange={setKey} />
+            <HillKeyInput keyStr={key} onChange={setKey} />
           ) : (
             <input
               className={styles.input}
@@ -396,17 +399,17 @@ export default function CipherTool({ initialCipher = "caesar" }) {
             <div className={styles.outputMeta}>
               <span>{output.length} chars</span>
               <span>
-                {["caesar", "vigenere", "affine", "substitution"].includes(cipher) 
-                  ? "Substitution" 
-                  : ["railfence"].includes(cipher) 
-                  ? "Transposition" 
-                  : ["playfair", "hill"].includes(cipher)
-                  ? "Polygraphic"
-                  : ["des", "aes"].includes(cipher)
-                  ? "Block Cipher"
-                  : ["rsa"].includes(cipher)
-                  ? "Asymmetric"
-                  : "Hash Function"}
+                {["caesar", "vigenere", "affine", "substitution"].includes(cipher)
+                  ? "Substitution"
+                  : ["railfence"].includes(cipher)
+                    ? "Transposition"
+                    : ["playfair", "hill"].includes(cipher)
+                      ? "Polygraphic"
+                      : ["des", "aes"].includes(cipher)
+                        ? "Block Cipher"
+                        : ["rsa"].includes(cipher)
+                          ? "Asymmetric"
+                          : "Hash Function"}
               </span>
             </div>
           )}
@@ -418,6 +421,8 @@ export default function CipherTool({ initialCipher = "caesar" }) {
         <PlayfairVisualizer stepsData={steps[0].data} mode={mode} />
       ) : steps.length > 0 && cipher === "hill" ? (
         <HillVisualizer stepsData={steps[0].data} mode={mode} />
+      ) : steps.length > 0 && cipher === "vigenere" ? (
+        <VigenereVisualizer stepsData={steps[0].data} mode={mode} />
       ) : steps.length > 0 && (
         <StepByStep steps={steps} mode={mode} cipher={cipher} />
       )}

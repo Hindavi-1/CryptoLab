@@ -1,6 +1,8 @@
 import Link from "next/link";
 import Flowchart from "../../../components/Flowchart";
+import VigenereTable from "../../../components/VigenereTable";
 import styles from "./cipher.module.css";
+
 
 const CIPHER_DATA = {
   caesar: {
@@ -40,29 +42,66 @@ const CIPHER_DATA = {
     name: "Vigenère Cipher",
     category: "Classical · Symmetric · Polyalphabetic",
     year: "1553",
-    origin: "Giovan Battista Bellaso",
-    keySpace: "26^n keys",
+    origin: "Giovan Battista Bellaso (attributed to Blaise de Vigenère)",
+    keySpace: "26ⁿ keys (n = keyword length)",
     securityRating: 2,
-    description: "The Vigenère cipher uses a keyword to determine multiple shift values, making it far stronger than the Caesar cipher.",
+    description: "The Vigenère cipher is a method of encrypting alphabetic text using a series of interwoven Caesar ciphers based on the letters of a keyword. Regarded as 'le chiffre indéchiffrable' (the indecipherable cipher) for over 300 years, it uses a repeating keyword to apply a different Caesar shift to each plaintext letter, making single-letter frequency analysis ineffective against it.",
     howItWorks: [
-      "Choose a keyword",
-      "Repeat keyword over plaintext",
-      "Each key letter determines a shift (A=0, B=1...)",
-      "Add plaintext letter and key letter values (mod 26)",
+      "Choose a keyword (e.g., KEY). Repeat it over the plaintext letter-by-letter.",
+      "Convert each keyword letter to its shift value: A=0, B=1, C=2, ..., Z=25.",
+      "For each plaintext letter, apply the Caesar shift determined by the aligned keyword letter.",
+      "Use modular arithmetic (mod 26) so shifts wrap around the alphabet.",
+      "Non-alphabetic characters (spaces, punctuation) are passed through unchanged.",
+      "To decrypt, reverse the shift for each letter using the same keyword alignment.",
+    ],
+    encryptionSteps: [
+      "Step 1 — Write the keyword: Write the keyword repeatedly beneath the plaintext, aligning one key letter per plaintext letter.",
+      "Step 2 — Convert to numbers: Assign A=0 through Z=25 for both the plaintext letter (P) and the aligned keyword letter (K).",
+      "Step 3 — Apply the formula: Ciphertext letter C = (P + K) mod 26.",
+      "Step 4 — Convert back: Convert the resulting number back to a letter (0→A, 1→B, ..., 25→Z).",
+      "Step 5 — Repeat: Continue through all plaintext letters, cycling the keyword as needed.",
+      "Step 6 — Table lookup (alternate): Alternatively, look up Row K (key letter) and Column P (plaintext letter) in the Vigenère Table — the intersecting cell is the ciphertext letter.",
+    ],
+    decryptionSteps: [
+      "Step 1 — Align the keyword: Write the keyword repeatedly beneath the ciphertext, aligning one key letter per ciphertext letter.",
+      "Step 2 — Convert to numbers: Assign A=0 through Z=25 for both the ciphertext letter (C) and the aligned keyword letter (K).",
+      "Step 3 — Apply the inverse formula: Plaintext letter P = (C − K + 26) mod 26.",
+      "Step 4 — Convert back: Convert the resulting number back to a letter.",
+      "Step 5 — Table lookup (alternate): In the Vigenère Table, find Row K (key letter). Scan that row for the ciphertext letter C. The column header at that position is the plaintext letter P.",
+      "Step 6 — Repeat: Continue through all ciphertext letters, cycling the keyword as needed.",
     ],
     example: {
-      plain: "HELLO",
+      plain: "ATTACK",
       key: "KEY",
-      cipher: "RIJVS",
+      cipher: "KXRKGI",
       breakdown: [
-        { p: "H(7)", c: "R(17)", note: "+K(10)" },
-        { p: "E(4)", c: "I(8)", note: "+E(4)" },
+        { p: "A(0)",  c: "K(10)", note: "+K(10)" },
+        { p: "T(19)", c: "X(23)", note: "+E(4)" },
+        { p: "T(19)", c: "R(17)", note: "+Y(24) mod 26" },
+        { p: "A(0)",  c: "K(10)", note: "+K(10)" },
+        { p: "C(2)",  c: "G(6)",  note: "+E(4)" },
+        { p: "K(10)", c: "I(8)",  note: "+Y(24) mod 26" },
       ],
     },
-    formula: "C_i = (P_i + K_{i mod m}) mod 26",
-    strengths: ["Resists simple frequency analysis", "Same letter encrypts differently"],
-    weaknesses: ["Vulnerable to Kasiski examination", "Still insecure today"],
-    funFacts: ["Known as 'le chiffre indéchiffrable'"],
+    formula: "Encrypt: C = (P + K) mod 26   |   Decrypt: P = (C − K + 26) mod 26",
+    strengths: [
+      "Resists simple letter-frequency analysis",
+      "Same plaintext letter encrypts differently with different key letters",
+      "Much larger key space than Caesar (26ⁿ vs 25)",
+      "Simple to implement manually using a Vigenère table",
+    ],
+    weaknesses: [
+      "Vulnerable to Kasiski examination (finding repeated key patterns)",
+      "Index of Coincidence analysis can reveal the key length",
+      "Short or repeated keywords dramatically weaken security",
+      "Completely broken by modern cryptanalysis — not suitable for real security",
+    ],
+    funFacts: [
+      "Misattributed to Blaise de Vigenère for centuries — actually invented by Giovan Battista Bellaso in 1553.",
+      "Called 'le chiffre indéchiffrable' (the unbreakable cipher) until Charles Babbage cracked it in the 1800s.",
+      "The one-time pad — the theoretically unbreakable cipher — is a direct extension of Vigenère where the key is as long as the message and never repeated.",
+      "Used by Confederate forces during the US Civil War.",
+    ],
     toolCipher: "vigenere",
   },
   playfair: {
@@ -416,6 +455,21 @@ export default function CipherPage({ params }) {
               </section>
             )}
 
+            {/* Interactive Vigenère Table (only for vigenere cipher) */}
+            {params.name === "vigenere" && (
+              <section className={styles.section}>
+                <h2 className={styles.sectionTitle}>Vigenère Table (Tabula Recta)</h2>
+                <p style={{ fontSize: '14px', color: 'var(--text-muted)', lineHeight: 1.7, marginBottom: '4px' }}>
+                  The Vigenère table (also called <em>Tabula Recta</em>) is a 26×26 grid of all Caesar alphabets.
+                  To encrypt: find the <strong style={{color:'var(--purple,#7c3aed)'}}>row of the key letter</strong> and the{" "}
+                  <strong style={{color:'var(--accent)'}}>column of the plaintext letter</strong> — the intersection gives
+                  the <strong style={{color:'var(--green)'}}>ciphertext letter</strong>.
+                  To decrypt: find the key-letter row, scan for the ciphertext letter, then read the column header.
+                </p>
+                <VigenereTable />
+              </section>
+            )}
+
             {/* Interactive Tool CTA */}
             <section className={styles.section}>
               <div className={styles.toolCtaCard}>
@@ -434,6 +488,7 @@ export default function CipherPage({ params }) {
                 </Link>
               </div>
             </section>
+
 
             {/* Formula */}
             {data.formula && (
@@ -496,6 +551,17 @@ export default function CipherPage({ params }) {
               </ul>
             </div>
 
+            {data.funFacts && (
+              <div className={styles.asideCard}>
+                <h3 className={styles.asideTitle}>💡 Fun Facts</h3>
+                <ul className={styles.prosList}>
+                  {data.funFacts.map((f, i) => (
+                    <li key={i}>{f}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
             <div className={styles.asideCard}>
               <h3 className={styles.asideTitle}>Quick Links</h3>
               <div className={styles.quickLinks}>
@@ -511,6 +577,7 @@ export default function CipherPage({ params }) {
               </div>
             </div>
           </aside>
+
         </div>
       </div>
     </div>

@@ -1,0 +1,170 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.topBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.legend {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.legend span {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.legendKey   { color: var(--purple, #7c3aed); }
+.legendPlain { color: var(--accent); }
+.legendActive { color: var(--green); }
+
+.resultBadge {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 600;
+  background: var(--card);
+  border: 1px solid var(--border-strong);
+  border-radius: 100px;
+  padding: 6px 16px;
+  color: var(--text);
+  animation: popIn 0.18s ease both;
+}
+
+.resultBadge strong {
+  color: var(--green);
+  font-size: 15px;
+}
+
+@keyframes popIn {
+  from { opacity: 0; transform: scale(0.9); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+.hint {
+  font-size: 12px;
+  color: var(--text-subtle);
+  font-family: var(--font-mono);
+  margin: 0;
+  line-height: 1.6;
+}
+
+/* ── Table scroll wrapper ── */
+.tableScroll {
+  overflow-x: auto;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+  background: var(--card);
+  cursor: default;
+}
+
+.table {
+  border-collapse: collapse;
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  min-width: 700px;
+  user-select: none;
+}
+
+/* corner cell */
+.corner {
+  background: var(--card-secondary);
+  color: var(--text-subtle);
+  font-size: 9px;
+  padding: 7px 5px;
+  text-align: center;
+  position: sticky;
+  left: 0;
+  z-index: 4;
+  border-right: 2px solid var(--border);
+  border-bottom: 2px solid var(--border);
+}
+
+/* column header */
+.colHeader {
+  padding: 6px 4px;
+  text-align: center;
+  font-weight: 700;
+  color: var(--text-subtle);
+  border-bottom: 2px solid var(--border);
+  background: var(--card-secondary);
+  transition: background 0.12s, color 0.12s;
+  cursor: pointer;
+}
+
+.colHeader.colHl {
+  background: var(--accent);
+  color: white;
+}
+
+/* row header */
+.rowHeader {
+  padding: 5px 8px;
+  text-align: center;
+  font-weight: 700;
+  color: var(--text-subtle);
+  border-right: 2px solid var(--border);
+  background: var(--card-secondary);
+  position: sticky;
+  left: 0;
+  z-index: 2;
+  transition: background 0.12s, color 0.12s;
+  cursor: pointer;
+}
+
+.rowHeader.rowHl {
+  background: var(--purple, #7c3aed);
+  color: white;
+}
+
+/* data cells */
+.cell {
+  padding: 5px 4px;
+  text-align: center;
+  color: var(--text-subtle);
+  transition: background 0.09s, color 0.09s;
+  cursor: pointer;
+}
+
+.cell:hover {
+  background: var(--card-secondary);
+  color: var(--text);
+}
+
+.cellRow {
+  background: rgba(124, 58, 237, 0.12);
+  color: var(--text);
+}
+
+.cellCol {
+  background: var(--accent-glow);
+  color: var(--accent);
+}
+
+.cellActive {
+  background: linear-gradient(135deg, var(--accent), var(--purple, #7c3aed)) !important;
+  color: white !important;
+  font-weight: 800;
+  font-size: 12px;
+  border-radius: 2px;
+  box-shadow: inset 0 0 0 1.5px rgba(255,255,255,0.35);
+  animation: cellPop 0.15s ease both;
+}
+
+@keyframes cellPop {
+  from { transform: scale(0.8); }
+  to   { transform: scale(1); }
+}
