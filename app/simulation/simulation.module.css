@@ -1,6 +1,7 @@
 .page {
   min-height: calc(100vh - 64px);
   padding: 64px 0 96px;
+  background-color: var(--bg);
 }
 
 .container {
@@ -10,10 +11,16 @@
 }
 
 .header {
-  margin-bottom: 48px;
   display: flex;
-  flex-direction: column;
-  gap: 12px;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 56px;
+  padding-bottom: 40px;
+  border-bottom: 1px solid var(--border);
+}
+
+.headerLeft {
+  max-width: 600px;
 }
 
 .eyebrow {
@@ -23,115 +30,150 @@
   text-transform: uppercase;
   letter-spacing: 0.12em;
   color: var(--accent);
+  display: block;
+  margin-bottom: 16px;
 }
 
 .title {
   font-family: var(--font-display);
-  font-size: clamp(32px, 5vw, 48px);
+  font-size: clamp(36px, 5vw, 56px);
   font-weight: 800;
-  letter-spacing: -0.025em;
+  letter-spacing: -0.03em;
   color: var(--text);
+  margin: 0 0 16px;
+  line-height: 1.1;
+  background: linear-gradient(135deg, var(--text) 0%, var(--text-muted) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 .subtitle {
-  font-size: 16px;
+  font-size: 17px;
   color: var(--text-muted);
-  max-width: 540px;
-  line-height: 1.65;
+  line-height: 1.6;
+  margin: 0;
 }
 
-.layout {
-  display: grid;
-  grid-template-columns: 1fr 280px;
-  gap: 28px;
-  align-items: start;
+.headerStats {
+  display: flex;
+  gap: 32px;
 }
 
-.main {
-  min-width: 0;
-}
-
-.aside {
+.hStat {
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  position: sticky;
-  top: 84px;
+  gap: 6px;
+  text-align: right;
 }
 
-.asideCard {
+.hStatN {
+  font-family: var(--font-display);
+  font-size: 32px;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--text);
+}
+
+.hStatLabel {
+  font-size: 13px;
+  color: var(--text-subtle);
+  font-weight: 500;
+}
+
+.filterBar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 32px;
   background: var(--card);
   border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 20px;
+  padding: 8px 24px 8px 8px;
+  border-radius: var(--radius-lg);
 }
 
-.asideTitle {
-  font-family: var(--font-display);
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--text);
-  margin-bottom: 10px;
-}
-
-.asideText {
-  font-size: 13px;
-  line-height: 1.65;
-  color: var(--text-muted);
-}
-
-.tipsList {
-  list-style: none;
+.filters {
   display: flex;
-  flex-direction: column;
-  gap: 8px;
+  gap: 4px;
 }
 
-.tipsList li {
+.filter {
+  background: transparent;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-family: var(--font-sans);
   font-size: 13px;
+  font-weight: 500;
   color: var(--text-muted);
-  line-height: 1.5;
-  padding-left: 16px;
-  position: relative;
-}
-
-.tipsList li::before {
-  content: '→';
-  position: absolute;
-  left: 0;
-  color: var(--accent);
-  font-size: 11px;
-}
-
-.cipherList {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.cipherItem {
+  cursor: pointer;
   display: flex;
   align-items: center;
-  gap: 10px;
-  font-size: 13px;
-  color: var(--text-muted);
-  font-family: var(--font-mono);
+  gap: 8px;
+  transition: all var(--transition);
 }
 
-.cipherDot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: var(--green);
-  flex-shrink: 0;
-  box-shadow: 0 0 6px var(--green);
+.filter:hover {
+  color: var(--text);
+  background: var(--card-hover);
+}
+
+.filterActive {
+  background: var(--accent-glow);
+  color: var(--accent);
+}
+
+.filterCount {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  background: var(--card-secondary);
+  color: var(--text-subtle);
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.filterCountActive {
+  background: var(--accent);
+  color: var(--bg);
+}
+
+.filterResult {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--text-subtle);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 24px;
 }
 
 @media (max-width: 900px) {
-  .layout {
-    grid-template-columns: 1fr;
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 32px;
   }
-  .aside {
-    position: static;
+  
+  .hStat {
+    text-align: left;
+  }
+  
+  .filterBar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 16px;
+  }
+  
+  .filters {
+    flex-wrap: wrap;
+    width: 100%;
+  }
+}
+
+@media (max-width: 600px) {
+  .grid {
+    grid-template-columns: 1fr;
   }
 }
