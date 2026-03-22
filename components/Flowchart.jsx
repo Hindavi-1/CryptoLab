@@ -7,12 +7,120 @@ export default function Flowchart({ cipher }) {
   const isTransposition = ['railfence', 'columnar'].includes(cipherLower);
   const isPolygraphic = ['playfair', 'hill'].includes(cipherLower);
   const isBlock = ['des', 'aes'].includes(cipherLower);
-  const isAsymmetric = ['rsa'].includes(cipherLower);
+  const isAsymmetric = ['rsa', 'dh', 'ecc', 'elgamal'].includes(cipherLower);
   const isHash = ['md5', 'sha256'].includes(cipherLower);
 
   let content = null;
 
-  if (isSubstitution || isTransposition || isPolygraphic) {
+  if (cipherLower === 'dh') {
+    content = (
+      <div className={styles.flowCol} style={{gap: "16px"}}>
+        <div style={{display:"flex", gap:"16px", justifyContent:"center"}}>
+           <div className={styles.node} style={{background: "var(--surface-3)", flex:1}}>Alice ({`Secret a`})</div>
+           <div className={styles.node} style={{background: "var(--surface-3)", flex:1}}>Bob ({`Secret b`})</div>
+        </div>
+        <div className={styles.flowRow}>
+           <div className={styles.process}><strong>A = gᵃ mod p</strong></div>
+           <div className={styles.process}><strong>B = gᵇ mod p</strong></div>
+        </div>
+        <div className={styles.flowRow}>
+           <div className={`${styles.arrow} ${styles.arrowDown}`}>↘</div>
+           <div className={`${styles.arrow} ${styles.arrowDown}`}>↙</div>
+        </div>
+        <div className={styles.flowRow}>
+           <div className={styles.process} style={{borderColor: "var(--accent)"}}><strong>Alice gets B</strong></div>
+           <div className={styles.process} style={{borderColor: "var(--purple)"}}><strong>Bob gets A</strong></div>
+        </div>
+        <div className={styles.flowRow}>
+           <div className={`${styles.arrow} ${styles.arrowDown}`}>↓</div>
+           <div className={`${styles.arrow} ${styles.arrowDown}`}>↓</div>
+        </div>
+        <div className={styles.flowRow}>
+           <div className={styles.process}><strong>S = Bᵃ mod p</strong></div>
+           <div className={styles.process}><strong>S = Aᵇ mod p</strong></div>
+        </div>
+        <div className={styles.node} style={{background: "var(--green)"}}>Shared Secret (S)</div>
+      </div>
+    );
+  } else if (cipherLower === 'ecc') {
+    content = (
+      <div className={styles.flowCol} style={{gap: "16px"}}>
+        <div style={{display:"flex", gap:"16px", justifyContent:"center"}}>
+           <div className={styles.node} style={{background: "var(--surface-3)", flex:1}}>Alice ({`Scalar kA`})</div>
+           <div className={styles.node} style={{background: "var(--surface-3)", flex:1}}>Bob ({`Scalar kB`})</div>
+        </div>
+        <div className={styles.flowRow}>
+           <div className={styles.process}><strong>PubA = kA * G</strong></div>
+           <div className={styles.process}><strong>PubB = kB * G</strong></div>
+        </div>
+        <div className={styles.flowRow}>
+           <div className={`${styles.arrow} ${styles.arrowDown}`}>↘</div>
+           <div className={`${styles.arrow} ${styles.arrowDown}`}>↙</div>
+        </div>
+        <div className={styles.flowRow}>
+           <div className={styles.process}><strong>SharedA = kA * PubB</strong></div>
+           <div className={styles.process}><strong>SharedB = kB * PubA</strong></div>
+        </div>
+        <div className={styles.node} style={{background: "var(--green)"}}>Shared Geometric Coordinate</div>
+      </div>
+    );
+  } else if (cipherLower === 'elgamal') {
+    content = (
+       <div className={styles.flowCol} style={{ gap: "24px" }}>
+          <div className={styles.flowCol}>
+            <div style={{ textAlign: "center", marginBottom: "8px", fontWeight:"bold", color:"var(--accent)" }}>Encryption Graph</div>
+            <div className={styles.flowRow}>
+              <div className={styles.node} style={{flex:1}}>Plaintext m</div>
+              <div className={`${styles.node} ${styles.nodeKey}`} style={{flex:1}}>Receiver Public (y)</div>
+            </div>
+            <div className={`${styles.arrow} ${styles.arrowDown}`}>↓</div>
+            <div className={styles.process} style={{background: "var(--surface-3)"}}>
+              <div className={styles.processContent}>
+                <strong className={styles.processTitle}>Randomize with k</strong>
+                <div className={styles.processDetail}>C1 = gᵏ mod p<br/>C2 = m * yᵏ mod p</div>
+              </div>
+            </div>
+            <div className={`${styles.arrow} ${styles.arrowDown}`}>↓</div>
+            <div className={styles.node}>Ciphertext (C1, C2)</div>
+          </div>
+          
+          <div className={styles.flowCol}>
+            <div style={{ textAlign: "center", marginBottom: "8px", fontWeight:"bold", color:"var(--green)" }}>Decryption Graph</div>
+            <div className={styles.flowRow}>
+               <div className={styles.node} style={{flex:1}}>Ciphertext (C1, C2)</div>
+               <div className={`${styles.node} ${styles.nodeKey}`} style={{flex:1}}>Receiver Private (x)</div>
+            </div>
+            <div className={`${styles.arrow} ${styles.arrowDown}`}>↓</div>
+            <div className={styles.process} style={{background: "var(--surface-3)"}}>
+              <div className={styles.processContent}>
+                <strong className={styles.processTitle}>Recover via Modular Math</strong>
+                <div className={styles.processDetail}>s = C1ˣ mod p<br/>m = C2 * s⁻¹ mod p</div>
+              </div>
+            </div>
+            <div className={`${styles.arrow} ${styles.arrowDown}`}>↓</div>
+            <div className={styles.node}>Plaintext m</div>
+          </div>
+        </div>
+    );
+  } else if (cipherLower === 'rsa') {
+    content = (
+       <div className={styles.flowCol}>
+          <div className={styles.flowRow}>
+            <div className={styles.node} style={{flex:1}}>Plaintext M</div>
+            <div className={`${styles.node} ${styles.nodeKey}`} style={{flex:1}}>Public Key (e, n)</div>
+          </div>
+          <div className={`${styles.arrow} ${styles.arrowDown}`}>↓</div>
+          <div className={styles.process} style={{background: "var(--surface-3)"}}>
+            <div className={styles.processContent}>
+              <strong className={styles.processTitle}>Modular Exponentiation</strong>
+              <div className={styles.processDetail}>C = Mᵉ mod n</div>
+            </div>
+          </div>
+          <div className={`${styles.arrow} ${styles.arrowDown}`}>↓</div>
+          <div className={styles.node}>Ciphertext C</div>
+        </div>
+    );
+  } else if (isSubstitution || isTransposition || isPolygraphic) {
     let modeText = isSubstitution ? "Substitution Engine" : isTransposition ? "Transposition / Permutation" : "Polygraphic Matrix Math";
     content = (
       <div className={styles.flowCol}>

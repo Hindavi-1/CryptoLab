@@ -15,6 +15,9 @@ const ciphers = [
   { name: "DES",                slug: "des",          description: "Data Encryption Standard — a 56-bit Feistel block cipher. Now retired but historically vital.",                  category: "Modern",   tag: "Block Cipher" },
   { name: "AES",                slug: "aes",          description: "Advanced Encryption Standard with 128/192/256-bit keys. The current global standard.",                          category: "Modern",   tag: "Block Cipher" },
   { name: "RSA",                slug: "rsa",          description: "Rivest–Shamir–Adleman — public-key system based on the difficulty of factoring primes.",                         category: "Modern",   tag: "Asymmetric"   },
+  { name: "Diffie-Hellman",     slug: "dh",           description: "Key exchange protocol establishing a shared secret over an insecure channel.",                                    category: "Modern",   tag: "Asymmetric"   },
+  { name: "ElGamal",            slug: "elgamal",      description: "Public-key cryptosystem utilizing randomized ephemeral keys to ensure semantic security.",                            category: "Modern",   tag: "Asymmetric"   },
+  { name: "Elliptic Curve",     slug: "ecc",          description: "Advanced public-key cryptography leveraging algebraic structures of elliptic curves over finite fields.",             category: "Modern",   tag: "Asymmetric"   },
   { name: "MD5",                slug: "md5",          description: "Message Digest 5 produces a 128-bit hash. Widely used for integrity, now considered weak.",                      category: "Hash",     tag: "Keyless"      },
   { name: "SHA-256",            slug: "sha256",       description: "Secure Hash Algorithm producing a 256-bit hash. Used in blockchain and security certs.",                         category: "Hash",     tag: "Keyless"      },
 ];

@@ -366,21 +366,131 @@ const CIPHER_DATA = {
     name: "RSA",
     category: "Modern · Asymmetric",
     year: "1977",
-    origin: "Rivest, Shamir, Adleman",
-    keySpace: "Factoring-based",
+    origin: "Ron Rivest, Adi Shamir, Leonard Adleman",
+    keySpace: "Depends on modulus size (usually 2048-bit or 4096-bit)",
     securityRating: 5,
-    description: "The first widely used public-key system, based on the difficulty of factoring large primes.",
+    description: "RSA is one of the first practical public-key cryptosystems and is widely used for secure data transmission. Its security relies on the mathematical difficulty of factoring large integers (the product of two large prime numbers).",
     howItWorks: [
-      "Generate two large primes",
-      "Compute n and phi",
-      "Choose e and calculate d",
+      "Key Generation: Two distinct primes (p and q) are chosen and multiplied to produce the modulus (n).",
+      "Euler's Totient: The totient function φ(n) is calculated as (p-1)(q-1).",
+      "Public Exponent (e): An integer e is chosen such that 1 < e < φ(n) and gcd(e, φ(n)) = 1.",
+      "Private Exponent (d): The modular multiplicative inverse of e (modulo φ(n)) is computed to serve as the private key.",
+      "Encryption: The plaintext M is converted to an integer and ciphertext C is computed as C = M^e mod n.",
+      "Decryption: The ciphertext is recovered via M = C^d mod n."
     ],
-    example: null,
-    formula: "C = M^e mod n",
-    strengths: ["No pre-shared secret needed", "Enables digital signatures"],
-    weaknesses: ["Slower than symmetric", "Quantum vulnerable"],
-    funFacts: ["Briefly classified as a munition"],
+    encryptionSteps: [
+      "Step 1: Translate the text into numerical blocks (M) such that 0 ≤ M < n.",
+      "Step 2: Raise each block M to the power of the public exponent e.",
+      "Step 3: Divide by the modulus n to find the remainder. C = M^e mod n."
+    ],
+    decryptionSteps: [
+      "Step 1: Take the ciphertext blocks C.",
+      "Step 2: Raise each block C to the power of the private exponent d.",
+      "Step 3: Keep the remainder modulus n, evaluating M = C^d mod n.",
+      "Step 4: Translate the numerical blocks M back into text."
+    ],
+    example: "Generating keys from primes p=61, q=53 enables math like M^17 mod 3233.",
+    formula: "Encrypt: C = M^e mod n | Decrypt: M = C^d mod n",
+    strengths: ["Provides both encryption and digital signatures.", "Underpins the security of TLS/SSL for secure web browsing."],
+    weaknesses: ["Extremely slow compared to symmetric ciphers (usually used just to exchange symmetric keys).", "Vulnerable to future quantum computers running Shor's algorithm."],
+    funFacts: ["The UK intelligence agency GCHQ actually developed an equivalent system in 1973 (Clifford Cocks) but kept it classified.", "'RSA' stands for the initials of the surnames of the inventors."],
     toolCipher: "rsa",
+  },
+  dh: {
+    name: "Diffie-Hellman Key Exchange",
+    category: "Modern · Asymmetric · Key Exchange",
+    year: "1976",
+    origin: "Whitfield Diffie & Martin Hellman",
+    keySpace: "Depends on prime modulus size",
+    securityRating: 5,
+    description: "Diffie-Hellman (DH) is a mathematical method of securely exchanging cryptographic keys over a public channel. It was one of the first public-key protocols and allows two parties with no prior knowledge of each other to jointly establish a shared secret.",
+    howItWorks: [
+      "Public Parameters: Alice and Bob agree on a large prime modulus (p) and a generator base (g).",
+      "Private Secrets: Alice picks a secret integer (a). Bob picks a secret integer (b).",
+      "Public Computation: Alice computes A = g^a mod p. Bob computes B = g^b mod p.",
+      "Exchange: They exchange their public computed values (A and B) over the insecure network.",
+      "Shared Secret: Alice computes S = B^a mod p. Bob computes S = A^b mod p. Both equal g^(ab) mod p."
+    ],
+    encryptionSteps: [
+      "Not applicable. DH is a key agreement protocol, not an encryption cipher. The shared secret generated is usually passed to a symmetric cipher like AES."
+    ],
+    decryptionSteps: [
+      "Not applicable."
+    ],
+    example: "Using p=23, g=5. If Alice picks 4 and Bob picks 3, they both arrive at secret 18.",
+    formula: "Alice = A^b mod p | Bob = B^a mod p | S = g^(ab) mod p",
+    strengths: ["Pioneered the concept of public-key cryptography.", "Enables Perfect Forward Secrecy (PFS) when ephemeral keys are used."],
+    weaknesses: ["Vulnerable to Man-in-the-Middle (MitM) attacks if the initial public keys are not authenticated (e.g., using digital signatures)."],
+    funFacts: ["Ralph Merkle also significantly contributed to the invention, and Hellman has argued it should be called 'Diffie-Hellman-Merkle' key exchange."],
+    toolCipher: "dh",
+  },
+  ecc: {
+    name: "Elliptic Curve Cryptography (ECC)",
+    category: "Modern · Asymmetric",
+    year: "1985",
+    origin: "Neal Koblitz & Victor S. Miller",
+    keySpace: "Point scaling on algebraic curves",
+    securityRating: 5,
+    description: "Elliptic Curve Cryptography is an approach to public-key cryptography based on the algebraic structure of elliptic curves over finite fields. ECC can yield equivalent security to RSA with significantly smaller keys.",
+    howItWorks: [
+      "Curve Equation: Depends on examining points (x, y) that satisfy y^2 = x^3 + ax + b.",
+      "Base Point: A generator point G on the curve is publicly agreed upon.",
+      "Private Key: A randomly selected integer k.",
+      "Public Key: A curve point derived by multiplying the base point by the private key: P = k * G.",
+      "Key Exchange (ECDH): Alice computes S = k_A * P_B. Bob computes S = k_B * P_A. They arrive at the exact same geometric coordinate."
+    ],
+    encryptionSteps: [
+      "Note: The visualizer demonstrates Elliptic Curve Diffie-Hellman (ECDH).",
+      "Step 1: Alice generates her public point by adding the base point G to itself k_A times.",
+      "Step 2: Bob generates his public point using his private scalar k_B.",
+      "Step 3: The public coordinate points are exchanged spanning the insecure network.",
+      "Step 4: Both parties scalar multiply the received public point by their own private scalar to derive the shared secret coordinate."
+    ],
+    decryptionSteps: [
+      "Not applicable for purely ECDH exchange."
+    ],
+    example: "Finding G + G by drawing a tangent line, finding the intersection on the curve, and reflecting it over the x-axis.",
+    formula: "y² = x³ + ax + b | Public Key = k * G",
+    strengths: ["Provides equivalent security to RSA with drastically smaller key sizes (256-bit ECC ≈ 3072-bit RSA).", "Consumes far less computing power and battery life, dominating mobile and IoT devices."],
+    weaknesses: ["More complex to implement securely, prone to subtle side-channel attacks on weak curves.", "Standard curves (like NIST P-256) have drawn suspicion regarding NSA influenced constants."],
+    funFacts: ["Bitcoin uses an elliptic curve called secp256k1 for its digital signatures.", "The math behind ECC fundamentally involves 'drawing lines' through curves to find intersecting dots."],
+    toolCipher: "ecc",
+  },
+  elgamal: {
+    name: "ElGamal Encryption",
+    category: "Modern · Asymmetric",
+    year: "1985",
+    origin: "Taher Elgamal",
+    keySpace: "Depends on prime modulus size",
+    securityRating: 5,
+    description: "The ElGamal encryption system is an asymmetric key encryption algorithm based on the Diffie-Hellman key exchange. It integrates cryptographic randomization, ensuring the same plaintext encrypted twice produces completely different ciphertexts.",
+    howItWorks: [
+      "Key Generation: Choose prime p, generator g. Private key x is chosen. Public key y is computed as g^x mod p.",
+      "Encryption: To encrypt message m, the sender picks a random ephemeral key k.",
+      "Ciphertext Part 1: C1 is computed as the sender's public contribution: C1 = g^k mod p.",
+      "Ciphertext Part 2: C2 masks the message using the shared secret: C2 = m * y^k mod p.",
+      "Decryption: The receiver uses their private key x to compute the shared secret s = C1^x mod p.",
+      "Recovery: The receiver multiplies C2 by the modular inverse of the secret: m = C2 * s⁻¹ mod p."
+    ],
+    encryptionSteps: [
+      "Step 1: Obtain the receiver's Public Key (y, g, p).",
+      "Step 2: Generate a random one-time-use scalar k.",
+      "Step 3: Convert the plaintext into a mathematical integer m.",
+      "Step 4: Compute C1 = g^k mod p.",
+      "Step 5: Compute C2 = m * y^k mod p. Send the pair (C1, C2)."
+    ],
+    decryptionSteps: [
+      "Step 1: Receive ciphertext pair (C1, C2).",
+      "Step 2: Raise C1 to the private key x to find the masking factor s = C1^x mod p.",
+      "Step 3: Find the modular inverse of s modulo p.",
+      "Step 4: Multiply C2 by the inverse of s modulo p to strip the mask and reveal m."
+    ],
+    example: "Encrypting 'Hello' uses random variable `k`, producing totally different cipher variables `c1` and `c2` the next time.",
+    formula: "C1 = g^k | C2 = m * y^k | M = C2 / (C1^x) mod p",
+    strengths: ["Probabilistic encryption ensures semantic security; the ciphertext changes even if the message and key are the same.", "Closely tied to the discrete logarithm problem."],
+    weaknesses: ["Ciphertext expansion: The ciphertext is twice as long as the plaintext.", "Slower than RSA for encryption due to two modular exponentiations."],
+    funFacts: ["ElGamal's creator, Taher Elgamal, is often recognized as the 'father of SSL' due to his later work at Netscape.", "The Digital Signature Algorithm (DSA) is heavily based on variants of ElGamal."],
+    toolCipher: "elgamal",
   },
   md5: {
     name: "MD5",

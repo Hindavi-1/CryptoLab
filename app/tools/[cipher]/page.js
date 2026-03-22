@@ -15,6 +15,9 @@ const CIPHER_META = {
     des: { name: "DES (Demo)", description: "Data Encryption Standard, a block cipher." },
     aes: { name: "AES (Demo)", description: "Advanced Encryption Standard, a block cipher." },
     rsa: { name: "RSA (Demo)", description: "A public-key cryptosystem." },
+    dh: { name: "Diffie-Hellman", description: "Key exchange protocol." },
+    ecc: { name: "Elliptic Curve", description: "Modern elliptic curve asymmetric cryptographic suite." },
+    elgamal: { name: "ElGamal", description: "Public key encryption ensuring semantic security." },
     md5: { name: "MD5 (Demo)", description: "A cryptographic hash function." },
     sha256: { name: "SHA-256 (Demo)", description: "A cryptographic hash function." },
 };

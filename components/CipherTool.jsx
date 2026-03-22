@@ -12,9 +12,16 @@ import {
   encryptDES, decryptDES, getDESSteps,
   encryptAES, decryptAES, getAESSteps,
   encryptRSA, decryptRSA, getRSASteps, generateRSAKeys,
+  getDHSteps,
+  encryptElGamal, decryptElGamal, getElGamalSteps, generateElGamalKeys,
+  getECCSteps,
   hashMD5, decryptMD5, getMD5Steps,
   hashSHA256, decryptSHA256, getSHA256Steps
 } from "../lib/ciphers/index";
+import RSAVisualizer from "./RSAVisualizer";
+import DHVisualizer from "./DHVisualizer";
+import ElGamalVisualizer from "./ElGamalVisualizer";
+import ECCVisualizer from "./ECCVisualizer";
 import PlayfairVisualizer from "./PlayfairVisualizer";
 import HillKeyInput from "./HillKeyInput";
 import HillVisualizer from "./HillVisualizer";
@@ -41,7 +48,10 @@ const CIPHERS = [
   { value: "substitution", label: "Substitution", keyLabel: "26-char Alphabet", keyType: "text", keyPlaceholder: "QWERTYUIOPASDFGHJKLZXCVBNM" },
   { value: "des", label: "DES", keyLabel: "Key (16-char Hex)", keyType: "text", keyPlaceholder: "0123456789ABCDEF" },
   { value: "aes", label: "AES", keyLabel: "Key (Hex)", keyType: "text", keyPlaceholder: "0123456789ABCDEF..." },
-  { value: "rsa", label: "RSA (Educational)", keyLabel: "e, n (Encrypt) or d, n (Decrypt)", keyType: "text", keyPlaceholder: "17,3233" },
+  { value: "rsa", label: "RSA", keyLabel: "RSA Options", keyType: "text", disabledKey: true },
+  { value: "dh", label: "Diffie-Hellman", keyLabel: "DH Options", keyType: "text", disabledKey: true },
+  { value: "elgamal", label: "ElGamal", keyLabel: "ElGamal Options", keyType: "text", disabledKey: true },
+  { value: "ecc", label: "Elliptic Curve (ECC)", keyLabel: "ECC Options", keyType: "text", disabledKey: true },
   { value: "md5", label: "MD5", keyLabel: "None", keyType: "text", keyPlaceholder: "N/A", disabledKey: true },
   { value: "sha256", label: "SHA-256", keyLabel: "None", keyType: "text", keyPlaceholder: "N/A", disabledKey: true },
 ];
@@ -83,23 +93,35 @@ function runCipher(cipher, mode, text, key, opts = {}) {
     }
     case "des": {
       const k = key || "0123456789ABCDEF";
-      return mode === "encrypt" 
-        ? encryptDES(text, k, { mode: opts.desMode, ivHex: opts.desIV, outputFormat: opts.desFormat }) 
+      return mode === "encrypt"
+        ? encryptDES(text, k, { mode: opts.desMode, ivHex: opts.desIV, outputFormat: opts.desFormat })
         : decryptDES(text, k, { mode: opts.desMode, ivHex: opts.desIV, inputFormat: opts.desFormat });
     }
     case "aes": {
       const k = key || "0".repeat(opts.aesKeySize / 4);
-      return mode === "encrypt" 
-        ? encryptAES(text, k, { mode: opts.aesMode, ivHex: opts.aesIV, outputFormat: opts.aesFormat, keySize: opts.aesKeySize }) 
+      return mode === "encrypt"
+        ? encryptAES(text, k, { mode: opts.aesMode, ivHex: opts.aesIV, outputFormat: opts.aesFormat, keySize: opts.aesKeySize })
         : decryptAES(text, k, { mode: opts.aesMode, ivHex: opts.aesIV, inputFormat: opts.aesFormat, keySize: opts.aesKeySize });
     }
     case "rsa": {
-      const [v1, v2] = (key || "17,3233").split(",").map(x => BigInt(x.trim()));
       if (mode === "encrypt") {
-        return encryptRSA(text, { e: v1, n: v2 });
+        return encryptRSA(text, { e: BigInt(opts.rsaE || "17"), n: BigInt(opts.rsaN || "3233") });
       } else {
-        return decryptRSA(text, { d: v1, n: v2 });
+        return decryptRSA(text, { d: BigInt(opts.rsaD || "2753"), n: BigInt(opts.rsaN || "3233") });
       }
+    }
+    case "dh": {
+      return "Diffie-Hellman is a key exchange protocol. See the visualizer below for the mathematical breakdown of the shared secret.";
+    }
+    case "elgamal": {
+      if (mode === "encrypt") {
+        return encryptElGamal(text, { p: BigInt(opts.elgP || "467"), g: BigInt(opts.elgG || "2"), y: BigInt(opts.elgY || "200") }, opts.elgK || "153");
+      } else {
+        return decryptElGamal(text, { x: BigInt(opts.elgX || "105"), p: BigInt(opts.elgP || "467") });
+      }
+    }
+    case "ecc": {
+      return "Elliptic Curve logic shown is for Key Exchange (ECDH). See the visualizer below for the mathematical derivation of points.";
     }
     case "md5": {
       return mode === "encrypt" ? hashMD5(text) : decryptMD5(text);
@@ -213,6 +235,36 @@ export default function CipherTool({ initialCipher = "caesar" }) {
   const [aesIV, setAesIV] = useState("");
   const [aesFormat, setAesFormat] = useState("base64");
   const [aesKeySize, setAesKeySize] = useState(128);
+
+  // RSA
+  const [rsaP, setRsaP] = useState("61");
+  const [rsaQ, setRsaQ] = useState("53");
+  const [rsaE, setRsaE] = useState("17");
+  const [rsaN, setRsaN] = useState("3233");
+  const [rsaD, setRsaD] = useState("2753");
+
+  // DH
+  const [dhP, setDhP] = useState("23");
+  const [dhG, setDhG] = useState("5");
+  const [dhA, setDhA] = useState("4");
+  const [dhB, setDhB] = useState("3");
+
+  // ElGamal
+  const [elgP, setElgP] = useState("467");
+  const [elgG, setElgG] = useState("2");
+  const [elgX, setElgX] = useState("105");
+  const [elgY, setElgY] = useState("200"); // g^x mod p
+  const [elgK, setElgK] = useState("153");
+
+  // ECC
+  const [eccP, setEccP] = useState("17");
+  const [eccA, setEccA] = useState("2");
+  const [eccB, setEccB] = useState("2");
+  const [eccGx, setEccGx] = useState("5");
+  const [eccGy, setEccGy] = useState("1");
+  const [eccPrivA, setEccPrivA] = useState("3");
+  const [eccPrivB, setEccPrivB] = useState("10");
+
   const [output, setOutput] = useState("");
   const [steps, setSteps] = useState([]);
   const [error, setError] = useState("");
@@ -221,12 +273,13 @@ export default function CipherTool({ initialCipher = "caesar" }) {
   const meta = CIPHERS.find((c) => c.value === cipher) || CIPHERS[0];
 
   const run = () => {
-    if (!input.trim()) return;
+    if (!input.trim() && !["dh", "ecc"].includes(cipher)) return;
     setError("");
     try {
-      const result = runCipher(cipher, mode, input, key, { 
-        desMode, desIV, desFormat, 
-        aesMode, aesIV, aesFormat, aesKeySize 
+      const result = runCipher(cipher, mode, input, key, {
+        desMode, desIV, desFormat,
+        aesMode, aesIV, aesFormat, aesKeySize,
+        rsaE, rsaN, rsaD, elgP, elgG, elgY, elgK, elgX
       });
       setOutput(result);
 
@@ -262,11 +315,25 @@ export default function CipherTool({ initialCipher = "caesar" }) {
           newSteps = getAESSteps(input, key || "0".repeat(aesKeySize / 4), mode, { blockMode: aesMode, ivHex: aesIV, format: aesFormat, keySize: aesKeySize });
           break;
         case "rsa": {
-          const [v1, v2] = (key || "17,3233").split(",").map(x => BigInt(x.trim()));
-          const rsaKey = mode === "encrypt" ? { e: v1, n: v2 } : { d: v1, n: v2 };
+          const rsaKey = mode === "encrypt"
+            ? { e: BigInt(rsaE || "17"), n: BigInt(rsaN || "3233") }
+            : { d: BigInt(rsaD || "2753"), n: BigInt(rsaN || "3233") };
           newSteps = getRSASteps(input, rsaKey, mode);
           break;
         }
+        case "dh":
+          newSteps = getDHSteps(dhP || "23", dhG || "5", dhA || "4", dhB || "3");
+          break;
+        case "elgamal": {
+          const elgKey = mode === "encrypt"
+            ? { p: BigInt(elgP || "467"), g: BigInt(elgG || "2"), y: BigInt(elgY || "200"), k: BigInt(elgK || "153") }
+            : { p: BigInt(elgP || "467"), x: BigInt(elgX || "105") };
+          newSteps = getElGamalSteps(input, elgKey, mode);
+          break;
+        }
+        case "ecc":
+          newSteps = getECCSteps(eccP || "17", eccA || "2", eccB || "2", eccGx || "5", eccGy || "1", eccPrivA || "3", eccPrivB || "10");
+          break;
         case "md5":
           newSteps = mode === "encrypt" ? getMD5Steps(input) : [];
           break;
@@ -405,6 +472,144 @@ export default function CipherTool({ initialCipher = "caesar" }) {
           </>
         )}
 
+        {cipher === "rsa" && (
+          <div className={styles.paramSection}>
+            <div className={styles.paramSectionTitle}>RSA Key Configurations</div>
+            <div className={styles.controlGroup}>
+              <label className={styles.label}>Prime P</label>
+              <input className={styles.input} type="text" value={rsaP} onChange={(e) => setRsaP(e.target.value)} />
+            </div>
+            <div className={styles.controlGroup}>
+              <label className={styles.label}>Prime Q</label>
+              <input className={styles.input} type="text" value={rsaQ} onChange={(e) => setRsaQ(e.target.value)} />
+            </div>
+            {mode === "encrypt" ? (
+              <>
+                <div className={styles.controlGroup}>
+                  <label className={styles.label}>Modulus N</label>
+                  <input className={styles.input} type="text" value={rsaN} onChange={(e) => setRsaN(e.target.value)} />
+                </div>
+                <div className={styles.controlGroup}>
+                  <label className={styles.label}>Public E</label>
+                  <input className={styles.input} type="text" value={rsaE} onChange={(e) => setRsaE(e.target.value)} />
+                </div>
+              </>
+            ) : (
+              <>
+                <div className={styles.controlGroup}>
+                  <label className={styles.label}>Modulus N</label>
+                  <input className={styles.input} type="text" value={rsaN} onChange={(e) => setRsaN(e.target.value)} />
+                </div>
+                <div className={styles.controlGroup}>
+                  <label className={styles.label}>Private D</label>
+                  <input className={styles.input} type="text" value={rsaD} onChange={(e) => setRsaD(e.target.value)} />
+                </div>
+              </>
+            )}
+            <div className={styles.controlGroup} style={{ flex: 1, minWidth: "100%", flexDirection: "row", justifyContent: "flex-end" }}>
+               <button className={styles.runBtn} style={{ width: "auto", padding: "8px 16px", marginTop: "8px" }} onClick={() => {
+                 try { const keys = generateRSAKeys(rsaP, rsaQ, rsaE); setRsaN(keys.publicKey.n.toString()); setRsaD(keys.privateKey.d.toString()); alert("Generated N and D from P and Q"); } catch(e) { alert(e.message); }
+               }}>Generate Keys from P & Q</button>
+            </div>
+          </div>
+        )}
+
+        {cipher === "dh" && (
+          <div className={styles.paramSection}>
+            <div className={styles.paramSectionTitle}>Diffie-Hellman Parameters</div>
+            <div className={styles.controlGroup}>
+              <label className={styles.label}>Shared Prime (p)</label>
+              <input className={styles.input} type="text" value={dhP} onChange={(e) => setDhP(e.target.value)} />
+            </div>
+            <div className={styles.controlGroup}>
+              <label className={styles.label}>Shared Base (g)</label>
+              <input className={styles.input} type="text" value={dhG} onChange={(e) => setDhG(e.target.value)} />
+            </div>
+            <div className={styles.controlGroup}>
+              <label className={styles.label}>Alice&apos;s Secret (A)</label>
+              <input className={styles.input} type="text" value={dhA} onChange={(e) => setDhA(e.target.value)} />
+            </div>
+            <div className={styles.controlGroup}>
+              <label className={styles.label}>Bob&apos;s Secret (B)</label>
+              <input className={styles.input} type="text" value={dhB} onChange={(e) => setDhB(e.target.value)} />
+            </div>
+            <div className={styles.controlGroup} style={{ flex: 1, minWidth: "100%", flexDirection: "row", justifyContent: "flex-end" }}>
+              <button className={styles.runBtn} style={{ width: "auto", padding: "8px 16px", marginTop: "8px" }} onClick={run}>
+                Compute Key Exchange
+              </button>
+            </div>
+          </div>
+        )}
+
+        {cipher === "elgamal" && (
+          <div className={styles.paramSection}>
+             <div className={styles.paramSectionTitle}>ElGamal Configurations</div>
+            <div className={styles.controlGroup}>
+              <label className={styles.label}>Prime (p)</label>
+              <input className={styles.input} type="text" value={elgP} onChange={(e) => setElgP(e.target.value)} />
+            </div>
+            <div className={styles.controlGroup}>
+              <label className={styles.label}>Generator (g)</label>
+              <input className={styles.input} type="text" value={elgG} onChange={(e) => setElgG(e.target.value)} />
+            </div>
+            {mode === "encrypt" ? (
+              <>
+                <div className={styles.controlGroup}>
+                  <label className={styles.label}>Public Key (y)</label>
+                  <input className={styles.input} type="text" value={elgY} onChange={(e) => setElgY(e.target.value)} />
+                </div>
+                <div className={styles.controlGroup}>
+                  <label className={styles.label}>Random Scalar (k)</label>
+                  <input className={styles.input} type="text" value={elgK} onChange={(e) => setElgK(e.target.value)} />
+                </div>
+              </>
+            ) : (
+              <div className={styles.controlGroup}>
+                <label className={styles.label}>Private Key (x)</label>
+                <input className={styles.input} type="text" value={elgX} onChange={(e) => setElgX(e.target.value)} />
+              </div>
+            )}
+             <div className={styles.controlGroup} style={{ flex: 1, minWidth: "100%", flexDirection: "row", justifyContent: "flex-end" }}>
+               <button className={styles.runBtn} style={{ width: "auto", padding: "8px 16px", marginTop: "8px" }} onClick={() => {
+                try { const keys = generateElGamalKeys(elgP, elgG, elgX); setElgY(keys.publicKey.y.toString()); alert("Generated Public Key Y"); } catch(e) { alert(e.message); }
+              }}>Calculate Y = gˣ mod p</button>
+            </div>
+          </div>
+        )}
+
+        {cipher === "ecc" && (
+          <div className={styles.paramSection}>
+            <div className={styles.paramSectionTitle}>Elliptic Curve ECDH Parameters</div>
+            <div className={styles.controlGroup}>
+              <label className={styles.label}>Prime (p)</label>
+              <input className={styles.input} type="text" value={eccP} onChange={(e) => setEccP(e.target.value)} />
+            </div>
+            <div className={styles.controlGroup}>
+              <label className={styles.label}>Curve a</label>
+              <input className={styles.input} type="text" value={eccA} onChange={(e) => setEccA(e.target.value)} />
+            </div>
+            <div className={styles.controlGroup}>
+              <label className={styles.label}>Curve b</label>
+              <input className={styles.input} type="text" value={eccB} onChange={(e) => setEccB(e.target.value)} />
+            </div>
+            <div className={styles.controlGroup}>
+              <label className={styles.label}>Base Point G</label>
+              <div style={{display:"flex", gap:"4px"}}>
+                <input className={styles.input} type="text" value={eccGx} onChange={(e) => setEccGx(e.target.value)} placeholder="x" />
+                <input className={styles.input} type="text" value={eccGy} onChange={(e) => setEccGy(e.target.value)} placeholder="y" />
+              </div>
+            </div>
+            <div className={styles.controlGroup}>
+              <label className={styles.label}>Alice Sec (kA)</label>
+              <input className={styles.input} type="text" value={eccPrivA} onChange={(e) => setEccPrivA(e.target.value)} />
+            </div>
+            <div className={styles.controlGroup}>
+              <label className={styles.label}>Bob Sec (kB)</label>
+              <input className={styles.input} type="text" value={eccPrivB} onChange={(e) => setEccPrivB(e.target.value)} />
+            </div>
+          </div>
+        )}
+
         {cipher === "des" && (
           <>
             <div className={styles.controlGroup}>
@@ -435,8 +640,9 @@ export default function CipherTool({ initialCipher = "caesar" }) {
       </div>
 
       {/* I/O panels */}
-      <div className={styles.panels}>
-        {/* Input */}
+      {!["dh"].includes(cipher) && (
+        <div className={styles.panels}>
+          {/* Input */}
         <div className={styles.panel}>
           <div className={styles.panelHeader}>
             <span className={styles.panelLabel}>
@@ -519,7 +725,8 @@ export default function CipherTool({ initialCipher = "caesar" }) {
             </div>
           )}
         </div>
-      </div>
+        </div>
+      )}
 
       {/* Step-by-step panel */}
       {steps.length > 0 && cipher === "playfair" ? (
@@ -534,6 +741,14 @@ export default function CipherTool({ initialCipher = "caesar" }) {
         <DESVisualizer data={steps[0].data} />
       ) : steps.length > 0 && cipher === "aes" ? (
         <AESVisualizer data={steps[0].data} />
+      ) : steps.length > 0 && cipher === "rsa" ? (
+        <RSAVisualizer data={steps[0].data} />
+      ) : steps.length > 0 && cipher === "dh" ? (
+        <DHVisualizer data={steps[0].data} />
+      ) : steps.length > 0 && cipher === "elgamal" ? (
+        <ElGamalVisualizer data={steps[0].data} />
+      ) : steps.length > 0 && cipher === "ecc" ? (
+        <ECCVisualizer data={steps[0].data} />
       ) : steps.length > 0 && (
         <StepByStep steps={steps} mode={mode} cipher={cipher} />
       )}

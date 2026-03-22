@@ -177,7 +177,7 @@ export const cryptoTree = {
           icon: "🤝",
           type: "cipher",
           description: "A key exchange protocol that allows two parties to establish a shared secret over an insecure channel.",
-          slug: "diffie-hellman",
+          slug: "dh",
         },
         {
           id: "elgamal",
