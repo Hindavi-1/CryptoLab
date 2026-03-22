@@ -32,24 +32,56 @@ export default function Flowchart({ cipher }) {
       </div>
     );
   } else if (isBlock) {
-    let detail = cipherLower === 'aes' ? "SubBytes, ShiftRows, MixColumns, AddRoundKey" : "Feistel Network, Permutations, S-Boxes";
-    content = (
-      <div className={styles.flowCol}>
-        <div className={styles.flowRow}>
-          <div className={styles.node}>Plaintext Block</div>
-          <div className={`${styles.node} ${styles.nodeKey}`}>Symmetric Key</div>
-        </div>
-        <div className={`${styles.arrow} ${styles.arrowDown}`}>↓</div>
-        <div className={styles.process}>
-          <div className={styles.processContent}>
-            <strong className={styles.processTitle}>{cipher.toUpperCase()} Rounds</strong>
-            <div className={styles.processDetail}>{detail}</div>
+    if (cipherLower === 'des') {
+      content = (
+        <div className={styles.flowCol}>
+          <div className={styles.flowRow}>
+            <div className={styles.node} style={{flex:1}}>64-bit Plaintext Block</div>
+            <div className={`${styles.node} ${styles.nodeKey}`} style={{flex:1}}>64-bit Key (56 usable)</div>
           </div>
+          <div className={`${styles.arrow} ${styles.arrowDown}`}>↓</div>
+          <div className={styles.process} style={{background: 'var(--surface-3)', border: '1px dashed var(--border)'}}>
+            <div className={styles.processContent}>
+              <strong className={styles.processTitle}>Initial Permutation (IP)</strong>
+            </div>
+          </div>
+          <div className={`${styles.arrow} ${styles.arrowDown}`}>↓</div>
+          <div className={styles.process}>
+            <div className={styles.processContent}>
+              <strong className={styles.processTitle}>16 Feistel Rounds</strong>
+              <div className={styles.processDetail}>L(i) = R(i-1) <br/> R(i) = L(i-1) ⊕ f(R(i-1), K(i))</div>
+            </div>
+          </div>
+          <div className={`${styles.arrow} ${styles.arrowDown}`}>↓</div>
+          <div className={styles.process} style={{background: 'var(--surface-3)', border: '1px dashed var(--border)'}}>
+            <div className={styles.processContent}>
+              <strong className={styles.processTitle}>Final Permutation (IP⁻¹)</strong>
+            </div>
+          </div>
+          <div className={`${styles.arrow} ${styles.arrowDown}`}>↓</div>
+          <div className={styles.node}>64-bit Ciphertext Block</div>
         </div>
-        <div className={`${styles.arrow} ${styles.arrowDown}`}>↓</div>
-        <div className={styles.node}>Ciphertext Block</div>
-      </div>
-    );
+      );
+    } else {
+      let detail = "SubBytes, ShiftRows, MixColumns, AddRoundKey";
+      content = (
+        <div className={styles.flowCol}>
+          <div className={styles.flowRow}>
+            <div className={styles.node}>Plaintext Block</div>
+            <div className={`${styles.node} ${styles.nodeKey}`}>Symmetric Key</div>
+          </div>
+          <div className={`${styles.arrow} ${styles.arrowDown}`}>↓</div>
+          <div className={styles.process}>
+            <div className={styles.processContent}>
+              <strong className={styles.processTitle}>{cipher.toUpperCase()} Rounds</strong>
+              <div className={styles.processDetail}>{detail}</div>
+            </div>
+          </div>
+          <div className={`${styles.arrow} ${styles.arrowDown}`}>↓</div>
+          <div className={styles.node}>Ciphertext Block</div>
+        </div>
+      );
+    }
   } else if (isAsymmetric) {
     content = (
       <div className={styles.flowCol}>

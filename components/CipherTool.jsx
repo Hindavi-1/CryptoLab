@@ -20,6 +20,7 @@ import HillKeyInput from "./HillKeyInput";
 import HillVisualizer from "./HillVisualizer";
 import VigenereVisualizer from "./VigenereVisualizer";
 import ColumnarVisualizer from "./ColumnarVisualizer";
+import DESVisualizer from "./DESVisualizer";
 import styles from "./CipherTool.module.css";
 
 const CIPHERS = [
@@ -37,14 +38,14 @@ const CIPHERS = [
   { value: "affine", label: "Affine Cipher", keyLabel: "a, b (e.g. 5,8)", keyType: "text", keyPlaceholder: "5,8" },
   { value: "hill", label: "Hill Cipher", keyLabel: "a,b,c,d (2x2)", keyType: "text", keyPlaceholder: "3,3,2,5" },
   { value: "substitution", label: "Substitution", keyLabel: "26-char Alphabet", keyType: "text", keyPlaceholder: "QWERTYUIOPASDFGHJKLZXCVBNM" },
-  { value: "des", label: "DES", keyLabel: "Passphrase", keyType: "text", keyPlaceholder: "SecretKey" },
+  { value: "des", label: "DES", keyLabel: "Key (16-char Hex)", keyType: "text", keyPlaceholder: "0123456789ABCDEF" },
   { value: "aes", label: "AES", keyLabel: "Passphrase", keyType: "text", keyPlaceholder: "SecretKey" },
   { value: "rsa", label: "RSA (Educational)", keyLabel: "e, n (Encrypt) or d, n (Decrypt)", keyType: "text", keyPlaceholder: "17,3233" },
   { value: "md5", label: "MD5", keyLabel: "None", keyType: "text", keyPlaceholder: "N/A", disabledKey: true },
   { value: "sha256", label: "SHA-256", keyLabel: "None", keyType: "text", keyPlaceholder: "N/A", disabledKey: true },
 ];
 
-function runCipher(cipher, mode, text, key) {
+function runCipher(cipher, mode, text, key, opts = {}) {
   switch (cipher) {
     case "caesar": {
       const s = parseInt(key) || 3;
@@ -80,8 +81,10 @@ function runCipher(cipher, mode, text, key) {
       return mode === "encrypt" ? encryptSubstitution(text, k) : decryptSubstitution(text, k);
     }
     case "des": {
-      const k = key || "SecretKey";
-      return mode === "encrypt" ? encryptDES(text, k) : decryptDES(text, k);
+      const k = key || "0123456789ABCDEF";
+      return mode === "encrypt" 
+        ? encryptDES(text, k, { mode: opts.desMode, ivHex: opts.desIV, outputFormat: opts.desFormat }) 
+        : decryptDES(text, k, { mode: opts.desMode, ivHex: opts.desIV, inputFormat: opts.desFormat });
     }
     case "aes": {
       const k = key || "SecretKey";
@@ -200,6 +203,9 @@ export default function CipherTool({ initialCipher = "caesar" }) {
   const [mode, setMode] = useState("encrypt");
   const [input, setInput] = useState("");
   const [key, setKey] = useState("");
+  const [desMode, setDesMode] = useState("ECB");
+  const [desIV, setDesIV] = useState("");
+  const [desFormat, setDesFormat] = useState("base64");
   const [output, setOutput] = useState("");
   const [steps, setSteps] = useState([]);
   const [error, setError] = useState("");
@@ -211,7 +217,7 @@ export default function CipherTool({ initialCipher = "caesar" }) {
     if (!input.trim()) return;
     setError("");
     try {
-      const result = runCipher(cipher, mode, input, key);
+      const result = runCipher(cipher, mode, input, key, { desMode, desIV, desFormat });
       setOutput(result);
 
       let newSteps = [];
@@ -240,7 +246,7 @@ export default function CipherTool({ initialCipher = "caesar" }) {
           newSteps = getSubstitutionSteps(input, key || "QWERTYUIOPASDFGHJKLZXCVBNM", mode);
           break;
         case "des":
-          newSteps = getDESSteps(input, key || "SecretKey", mode);
+          newSteps = getDESSteps(input, key || "0123456789ABCDEF", mode, { blockMode: desMode, ivHex: desIV, format: desFormat });
           break;
         case "aes":
           newSteps = getAESSteps(input, key || "SecretKey", mode);
@@ -352,6 +358,34 @@ export default function CipherTool({ initialCipher = "caesar" }) {
             </p>
           )}
         </div>
+
+        {cipher === "des" && (
+          <>
+            <div className={styles.controlGroup}>
+              <label className={styles.label}>Block Mode</label>
+              <select className={styles.select} value={desMode} onChange={(e) => { setDesMode(e.target.value); setOutput(""); setSteps([]); setError(""); }}>
+                <option value="ECB">ECB</option>
+                <option value="CBC">CBC</option>
+                <option value="CFB">CFB</option>
+                <option value="OFB">OFB</option>
+                <option value="CTR">CTR</option>
+              </select>
+            </div>
+            {desMode !== "ECB" && (
+              <div className={styles.controlGroup}>
+                <label className={styles.label}>IV (16-char Hex)</label>
+                <input className={styles.input} type="text" placeholder="e.g. 0123456789ABCDEF" value={desIV} onChange={(e) => setDesIV(e.target.value)} />
+              </div>
+            )}
+            <div className={styles.controlGroup}>
+              <label className={styles.label}>Output Format</label>
+              <select className={styles.select} value={desFormat} onChange={(e) => { setDesFormat(e.target.value); setOutput(""); setSteps([]); setError(""); }}>
+                <option value="base64">Base64</option>
+                <option value="hex">Hexadecimal</option>
+              </select>
+            </div>
+          </>
+        )}
       </div>
 
       {/* I/O panels */}
@@ -450,6 +484,8 @@ export default function CipherTool({ initialCipher = "caesar" }) {
         <VigenereVisualizer stepsData={steps[0].data} mode={mode} />
       ) : steps.length > 0 && cipher === "columnar" ? (
         <ColumnarVisualizer data={steps[0].data} />
+      ) : steps.length > 0 && cipher === "des" ? (
+        <DESVisualizer data={steps[0].data} />
       ) : steps.length > 0 && (
         <StepByStep steps={steps} mode={mode} cipher={cipher} />
       )}
