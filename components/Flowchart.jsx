@@ -4,7 +4,7 @@ export default function Flowchart({ cipher }) {
   const cipherLower = cipher.toLowerCase();
   
   const isSubstitution = ['caesar', 'vigenere', 'affine', 'substitution'].includes(cipherLower);
-  const isTransposition = ['railfence'].includes(cipherLower);
+  const isTransposition = ['railfence', 'columnar'].includes(cipherLower);
   const isPolygraphic = ['playfair', 'hill'].includes(cipherLower);
   const isBlock = ['des', 'aes'].includes(cipherLower);
   const isAsymmetric = ['rsa'].includes(cipherLower);

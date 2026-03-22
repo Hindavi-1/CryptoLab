@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Flowchart from "../../../components/Flowchart";
 import VigenereTable from "../../../components/VigenereTable";
+import ColumnarTheoryInteractive from "../../../components/ColumnarTheoryInteractive";
 import styles from "./cipher.module.css";
 
 
@@ -153,6 +154,62 @@ const CIPHER_DATA = {
     weaknesses: ["Preserves letter frequencies", "Very small key space"],
     funFacts: ["Common in early telegraphy"],
     toolCipher: "railfence",
+  },
+  columnar: {
+    name: "Columnar Transposition",
+    category: "Classical · Transposition",
+    year: "19th c.",
+    origin: "Military field ciphers",
+    keySpace: "n! orderings per length-n keyword (with duplicate handling)",
+    securityRating: 2,
+    description:
+      "A keyed transposition cipher: plaintext is written in rows under a keyword, then ciphertext is produced by reading each column from top to bottom in alphabetical order of the key letters (when two letters match, the left column is read before the right). The same key reverses the process. Incomplete rectangles are padded with a chosen letter so every column has the same height.",
+    howItWorks: [
+      "Normalize the keyword to letters A–Z and/or digits 0–9; its length is the number of columns.",
+      "Assign each column a rank: digits sort in numeric order (0–9), then letters A–Z; ties (same digit or letter) are broken by position (left before right).",
+      "Write only letters A–Z from the plaintext into the grid row by row, left to right.",
+      "If the last row is short, fill remaining cells with a padding letter (commonly X).",
+      "Encryption: read columns in rank order 1, 2, … — for each column, read top to bottom and append to the ciphertext.",
+      "Decryption: split the ciphertext into column-length chunks according to rank order, write each chunk down its column, then read the grid row by row and strip trailing padding.",
+    ],
+    encryptionSteps: [
+      "Prepare plaintext: keep A–Z, uppercase; drop spaces and punctuation for the matrix (same as many textbook definitions).",
+      "Choose a padding character (default X) for empty cells in the last row.",
+      "Lay out the keyword as column headers and compute each column’s read rank.",
+      "Fill the rectangle row-wise with plaintext, then padding if needed.",
+      "Concatenate column contents in ascending rank order to form ciphertext.",
+    ],
+    decryptionSteps: [
+      "Confirm ciphertext length is a multiple of the keyword length (after letter normalization).",
+      "Compute the same column ranks as encryption.",
+      "Partition ciphertext into segments: segment i is the letters for the column that has rank i+1.",
+      "Place each segment down its column from top to bottom.",
+      "Read the grid left-to-right, top-to-bottom, then remove trailing padding characters.",
+    ],
+    example: {
+      plain: "HELLO",
+      key: "BAC (pad X)",
+      cipher: "EOHLXL",
+      breakdown: [
+        { p: "Col A (rank 1)", c: "EO", note: "letters under 2nd key letter" },
+        { p: "Col B (rank 2)", c: "HL", note: "under 1st key letter" },
+        { p: "Col C (rank 3)", c: "LX", note: "under 3rd key letter" },
+      ],
+    },
+    formula: "Read order = sort columns by (digit 0–9, then letter A–Z, then index); C = concat columns in that order",
+    strengths: [
+      "Preserves letter frequencies but breaks adjacency structure",
+      "Larger keys increase permutations; double columnar was used operationally",
+    ],
+    weaknesses: [
+      "Vulnerable to anagramming and known-plaintext when used alone",
+      "Single application is solvable with patience; not suitable for modern secrecy",
+    ],
+    funFacts: [
+      "Often taught with the Allied attack on the ADFGVX system in WWI, which layered substitution with columnar transposition.",
+      "Reading columns in ‘alphabetic key order’ is the most common classroom definition; always fix tie-breaking for duplicate letters.",
+    ],
+    toolCipher: "columnar",
   },
   affine: {
     name: "Affine Cipher",
@@ -455,7 +512,10 @@ export default function CipherPage({ params }) {
               </section>
             )}
 
+          
+
             {/* Interactive Vigenère Table (only for vigenere cipher) */}
+
             {params.name === "vigenere" && (
               <section className={styles.section}>
                 <h2 className={styles.sectionTitle}>Vigenère Table (Tabula Recta)</h2>
@@ -501,6 +561,14 @@ export default function CipherPage({ params }) {
             )}
 
             {/* Example breakdown */}
+            {/* Interactive Columnar Theory */}
+            {/* {params.name === "columnar" && (
+              <section className={styles.section}>
+                <h2 className={styles.sectionTitle}>Interactive column builder</h2>
+                <ColumnarTheoryInteractive />
+              </section>
+            )} */}
+            {/* Example breakdown */}
             {data.example && data.example.breakdown && data.example.breakdown.length > 0 && (
               <section className={styles.section}>
                 <h2 className={styles.sectionTitle}>Step-by-Step Example</h2>
@@ -528,6 +596,7 @@ export default function CipherPage({ params }) {
                   </div>
                 </div>
               </section>
+            
             )}
           </div>
 

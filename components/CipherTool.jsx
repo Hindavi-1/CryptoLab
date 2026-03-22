@@ -5,6 +5,7 @@ import {
   encryptVigenere, decryptVigenere, getVigenereSteps,
   encryptPlayfair, decryptPlayfair, getPlayfairSteps,
   encryptRailFence, decryptRailFence,
+  encryptColumnar, decryptColumnar, buildColumnarTrace, parseColumnarKey,
   encryptAffine, decryptAffine, getAffineSteps,
   encryptHill, decryptHill, getHillSteps,
   encryptSubstitution, decryptSubstitution, getSubstitutionSteps,
@@ -18,6 +19,7 @@ import PlayfairVisualizer from "./PlayfairVisualizer";
 import HillKeyInput from "./HillKeyInput";
 import HillVisualizer from "./HillVisualizer";
 import VigenereVisualizer from "./VigenereVisualizer";
+import ColumnarVisualizer from "./ColumnarVisualizer";
 import styles from "./CipherTool.module.css";
 
 const CIPHERS = [
@@ -25,6 +27,13 @@ const CIPHERS = [
   { value: "vigenere", label: "Vigenère Cipher", keyLabel: "Keyword", keyType: "text", keyPlaceholder: "KEY" },
   { value: "playfair", label: "Playfair Cipher", keyLabel: "Keyword", keyType: "text", keyPlaceholder: "KEYWORD" },
   { value: "railfence", label: "Rail Fence Cipher", keyLabel: "Number of Rails", keyType: "number", keyPlaceholder: "3" },
+  {
+    value: "columnar",
+    label: "Columnar Transposition",
+    keyLabel: "Keyword · optional |pad",
+    keyType: "text",
+    keyPlaceholder: "CIPHER, 3142, or A1B2|Z",
+  },
   { value: "affine", label: "Affine Cipher", keyLabel: "a, b (e.g. 5,8)", keyType: "text", keyPlaceholder: "5,8" },
   { value: "hill", label: "Hill Cipher", keyLabel: "a,b,c,d (2x2)", keyType: "text", keyPlaceholder: "3,3,2,5" },
   { value: "substitution", label: "Substitution", keyLabel: "26-char Alphabet", keyType: "text", keyPlaceholder: "QWERTYUIOPASDFGHJKLZXCVBNM" },
@@ -52,6 +61,10 @@ function runCipher(cipher, mode, text, key) {
     case "railfence": {
       const r = parseInt(key) || 3;
       return mode === "encrypt" ? encryptRailFence(text, r) : decryptRailFence(text, r);
+    }
+    case "columnar": {
+      const { keyword, pad } = parseColumnarKey(key);
+      return mode === "encrypt" ? encryptColumnar(text, keyword, pad) : decryptColumnar(text, keyword, pad);
     }
     case "affine": {
       const [a, b] = (key || "5,8").split(",").map(x => parseInt(x.trim()));
@@ -244,6 +257,11 @@ export default function CipherTool({ initialCipher = "caesar" }) {
         case "sha256":
           newSteps = mode === "encrypt" ? getSHA256Steps(input) : [];
           break;
+        case "columnar": {
+          const { keyword, pad } = parseColumnarKey(key);
+          newSteps = [{ type: "columnar_data", data: buildColumnarTrace(input, keyword, pad, mode) }];
+          break;
+        }
         default:
           newSteps = [];
       }
@@ -326,6 +344,13 @@ export default function CipherTool({ initialCipher = "caesar" }) {
               disabled={meta.disabledKey}
             />
           )}
+          {cipher === "columnar" && (
+            <p className={styles.keyHint}>
+              Keyword: letters <strong>A–Z</strong> and/or digits <strong>0–9</strong> (digits sort before letters when ordering columns). Message: letters <strong>A–Z</strong> only in the grid. Append{" "}
+              <strong>|</strong> and one letter to change padding (default <strong>X</strong>), e.g.{" "}
+              <code>MONKEY|Q</code> or <code>314159|Z</code>.
+            </p>
+          )}
         </div>
       </div>
 
@@ -401,7 +426,7 @@ export default function CipherTool({ initialCipher = "caesar" }) {
               <span>
                 {["caesar", "vigenere", "affine", "substitution"].includes(cipher)
                   ? "Substitution"
-                  : ["railfence"].includes(cipher)
+                  : ["railfence", "columnar"].includes(cipher)
                     ? "Transposition"
                     : ["playfair", "hill"].includes(cipher)
                       ? "Polygraphic"
@@ -423,6 +448,8 @@ export default function CipherTool({ initialCipher = "caesar" }) {
         <HillVisualizer stepsData={steps[0].data} mode={mode} />
       ) : steps.length > 0 && cipher === "vigenere" ? (
         <VigenereVisualizer stepsData={steps[0].data} mode={mode} />
+      ) : steps.length > 0 && cipher === "columnar" ? (
+        <ColumnarVisualizer data={steps[0].data} />
       ) : steps.length > 0 && (
         <StepByStep steps={steps} mode={mode} cipher={cipher} />
       )}

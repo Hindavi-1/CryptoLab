@@ -105,7 +105,7 @@ export const cryptoTree = {
                   label: "Columnar Transposition",
                   icon: "📊",
                   type: "cipher",
-                  description: "Arranges plaintext in rows of fixed width, then reads off columns in a key-defined order.",
+                  description: "Arranges plaintext in rows of fixed width, then reads off columns in order of a letter/digit keyword.",
                   slug: "columnar",
                 },
               ],

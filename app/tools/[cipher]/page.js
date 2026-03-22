@@ -8,6 +8,7 @@ const CIPHER_META = {
     vigenere: { name: "Vigenère Cipher", description: "A polyalphabetic substitution cipher." },
     playfair: { name: "Playfair Cipher", description: "A digraph substitution cipher." },
     railfence: { name: "Rail Fence Cipher", description: "A transposition cipher." },
+    columnar: { name: "Columnar Transposition", description: "Keyed columnar transposition cipher." },
     affine: { name: "Affine Cipher", description: "A substitution cipher using a linear function." },
     hill: { name: "Hill Cipher", description: "A polygraphic substitution cipher using linear algebra." },
     substitution: { name: "Simple Substitution", description: "A substitution cipher with a fixed key." },

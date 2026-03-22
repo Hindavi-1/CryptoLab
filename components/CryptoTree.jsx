@@ -76,7 +76,7 @@ function TreeNode({ node, depth = 0, parentAccent }) {
             <Link href={`/cipher/${node.slug}`} className={styles.cardBtn} style={{ "--acc": acc }}>
               📖 Theory
             </Link>
-            <Link href={`/cipher/${node.slug}`} className={styles.cardBtnOutline} style={{ "--acc": acc }}>
+            <Link href={`/tools/${node.slug}`} className={styles.cardBtnOutline} style={{ "--acc": acc }}>
               🛠 Tool
             </Link>
             <Link href={`/simulation?cipher=${node.slug}`} className={styles.cardBtnOutline} style={{ "--acc": acc }}>
