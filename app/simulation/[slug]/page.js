@@ -1,0 +1,549 @@
+"use client";
+import { useState, useEffect, useCallback } from "react";
+import Link from "next/link";
+import {
+  encryptCaesar, decryptCaesar, getCaesarSteps,
+  encryptVigenere, decryptVigenere, getVigenereSteps,
+  encryptPlayfair, decryptPlayfair, getPlayfairSteps,
+  encryptRailFence, decryptRailFence,
+} from "../../../lib/ciphers/index";
+import VigenereVisualizer from "../../../components/VigenereVisualizer";
+import PlayfairVisualizer from "../../../components/PlayfairVisualizer";
+import RailFenceVisualizer from "../../../components/RailFenceVisualizer";
+import styles from "./simulationPage.module.css";
+
+// ─── Cipher metadata ────────────────────────────────────────────────────────
+const CIPHER_META = {
+  caesar: {
+    name: "Caesar Cipher",
+    tagline: "The oldest shift cipher",
+    icon: "Ⅲ",
+    color: "accent",
+    category: "Classical · Monoalphabetic",
+    formula: "C = (P + n) mod 26",
+    defaultText: "HELLO WORLD",
+    defaultKey: "3",
+    keyLabel: "Shift (0 – 25)",
+    keyType: "number",
+    keyPlaceholder: "3",
+    description: "Each letter shifts forward by n positions in the alphabet. One of history's simplest ciphers.",
+  },
+  vigenere: {
+    name: "Vigenère Cipher",
+    tagline: "The indecipherable polyalphabetic cipher",
+    icon: "V",
+    color: "purple",
+    category: "Classical · Polyalphabetic",
+    formula: "C = (P + K) mod 26",
+    defaultText: "HELLO WORLD",
+    defaultKey: "KEY",
+    keyLabel: "Keyword",
+    keyType: "text",
+    keyPlaceholder: "KEY",
+    description: "Uses a repeating keyword to apply different Caesar shifts to each letter, defeating simple frequency analysis.",
+  },
+  railfence: {
+    name: "Rail Fence Cipher",
+    tagline: "Zigzag transposition",
+    icon: "⫝̸",
+    color: "green",
+    category: "Classical · Transposition",
+    formula: "Zigzag across N rails",
+    defaultText: "HELLO WORLD",
+    defaultKey: "3",
+    keyLabel: "Number of Rails",
+    keyType: "number",
+    keyPlaceholder: "3",
+    description: "Writes text in a zigzag diagonal pattern across multiple rails, then reads each rail left-to-right to form the ciphertext.",
+  },
+  playfair: {
+    name: "Playfair Cipher",
+    tagline: "Digraph substitution on a 5×5 grid",
+    icon: "⊞",
+    color: "orange",
+    category: "Classical · Digraph",
+    formula: "Row / Col / Rectangle rules",
+    defaultText: "HIDE GOLD",
+    defaultKey: "PLAYFAIR",
+    keyLabel: "Keyword",
+    keyType: "text",
+    keyPlaceholder: "KEYWORD",
+    description: "Encrypts pairs of letters using a 5×5 key matrix. Three geometric rules — row, column, and rectangle — govern the substitution.",
+  },
+};
+
+// ─── Caesar step-by-step component ─────────────────────────────────────────
+function CaesarStepVisualizer({ steps, mode }) {
+  const [revealed, setRevealed] = useState(0);
+  const [playing, setPlaying] = useState(false);
+
+  const alpha = steps.filter((s) => s.type !== "passthrough");
+  const visible = steps.slice(0, revealed);
+
+  useEffect(() => {
+    if (!playing) return;
+    if (revealed >= steps.length) { setPlaying(false); return; }
+    const t = setTimeout(() => setRevealed((r) => r + 1), 80);
+    return () => clearTimeout(t);
+  }, [playing, revealed, steps.length]);
+
+  const startAnim = () => { setRevealed(0); setPlaying(true); };
+  const showAll   = () => { setRevealed(steps.length); setPlaying(false); };
+
+  if (steps.length === 0) return null;
+
+  return (
+    <div className={styles.caesarViz}>
+      <div className={styles.vizHeader}>
+        <span className={styles.vizTitle}>Character-by-Character Transformation</span>
+        <div className={styles.vizControls}>
+          <button className={styles.animBtn} onClick={startAnim} disabled={playing}>
+            {playing ? "▶ Animating…" : "▶ Animate"}
+          </button>
+          <button className={styles.animBtn} onClick={showAll}>
+            ⊞ Show All
+          </button>
+        </div>
+      </div>
+
+      {/* Alphabet wheel */}
+      <div className={styles.alphabetWheel}>
+        {Array.from({ length: 26 }, (_, i) => String.fromCharCode(65 + i)).map((l) => (
+          <span key={l} className={styles.wheelLetter}>{l}</span>
+        ))}
+      </div>
+
+      <div className={styles.stepGrid}>
+        {visible.map((step) =>
+          step.type === "passthrough" ? (
+            <div key={step.index} className={`${styles.stepCard} ${styles.stepCardPass}`}>
+              <span className={styles.stepIn}>{step.input === " " ? "·" : step.input}</span>
+              <span className={styles.stepArrow}>→</span>
+              <span className={styles.stepOut}>{step.output === " " ? "·" : step.output}</span>
+              <span className={styles.stepSkip}>skip</span>
+            </div>
+          ) : (
+            <div key={step.index} className={`${styles.stepCard} ${styles.stepCardActive}`}>
+              <div className={styles.stepCharRow}>
+                <span className={styles.stepPlain}>{step.input}</span>
+                <span className={styles.stepArrow}>→</span>
+                <span className={styles.stepCipher}>{step.output}</span>
+              </div>
+              {step.inputCode !== undefined && (
+                <div className={styles.stepShift}>
+                  <span>[{step.inputCode}]</span>
+                  <span className={styles.stepOp}>
+                    {mode === "encrypt" ? `+${step.effectiveShift}` : `−${step.effectiveShift}`}
+                  </span>
+                  <span>[{step.outputCode}]</span>
+                </div>
+              )}
+              <span className={styles.stepFormula}>{step.formula}</span>
+            </div>
+          )
+        )}
+      </div>
+
+      <div className={styles.stepSummary}>
+        {alpha.length} letters transformed · {steps.length - alpha.length} unchanged
+      </div>
+    </div>
+  );
+}
+
+// ─── Rail Fence enhanced visualizer ─────────────────────────────────────────
+function RailFenceEnhanced({ text, rails }) {
+  const r = Math.max(2, Math.min(parseInt(rails) || 3, 8));
+  const n = text.length;
+
+  if (!text.trim()) return (
+    <div className={styles.rfEmpty}>Enter text to see the rail-fence diagram.</div>
+  );
+
+  const grid = Array.from({ length: r }, () => new Array(n).fill(null));
+  let rail = 0, dir = 1;
+  for (let i = 0; i < n; i++) {
+    grid[rail][i] = text[i];
+    if (rail === 0) dir = 1;
+    else if (rail === r - 1) dir = -1;
+    rail += dir;
+  }
+
+  const RAIL_COLORS = [
+    "var(--accent)", "var(--purple)", "var(--green)", "var(--orange)",
+    "#EC4899", "#14B8A6", "#F59E0B", "#6366F1",
+  ];
+
+  return (
+    <div className={styles.rfWrap}>
+      <div className={styles.rfHeader}>
+        <span className={styles.rfTitle}>Rail Fence Grid — {r} rails, {n} characters</span>
+      </div>
+      <div className={styles.rfGrid}>
+        {grid.map((row, ri) => (
+          <div key={ri} className={styles.rfRow}>
+            <div className={styles.rfRailLabel} style={{ color: RAIL_COLORS[ri % RAIL_COLORS.length] }}>
+              Rail {ri + 1}
+            </div>
+            <div className={styles.rfCells}>
+              {row.map((cell, ci) => (
+                <div
+                  key={ci}
+                  className={`${styles.rfCell} ${cell !== null ? styles.rfCellFilled : styles.rfCellEmpty}`}
+                  style={cell !== null ? {
+                    background: `${RAIL_COLORS[ri % RAIL_COLORS.length]}22`,
+                    borderColor: RAIL_COLORS[ri % RAIL_COLORS.length],
+                    color: RAIL_COLORS[ri % RAIL_COLORS.length],
+                  } : {}}
+                >
+                  {cell !== null ? cell : ""}
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+      <div className={styles.rfReadout}>
+        <span className={styles.rfReadLabel}>Reading order:</span>
+        {grid.map((row, ri) => {
+          const chars = row.filter(Boolean);
+          if (chars.length === 0) return null;
+          return (
+            <span key={ri} className={styles.rfReadRail} style={{ color: RAIL_COLORS[ri % RAIL_COLORS.length] }}>
+              Rail {ri + 1}: {chars.join("")}
+            </span>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+// ─── Main Simulation Page ───────────────────────────────────────────────────
+export default function SimulationPage({ params }) {
+  const slug = params.slug;
+  const meta = CIPHER_META[slug];
+
+  const [mode, setMode]     = useState("encrypt");
+  const [input, setInput]   = useState(meta?.defaultText || "HELLO");
+  const [key, setKey]       = useState(meta?.defaultKey || "3");
+  const [output, setOutput] = useState("");
+  const [steps, setSteps]   = useState(null);
+  const [error, setError]   = useState("");
+  const [copied, setCopied] = useState(false);
+  const [isRunning, setIsRunning] = useState(false);
+
+  const run = useCallback(() => {
+    if (!input.trim()) return;
+    setError("");
+    setIsRunning(true);
+
+    try {
+      let result = "";
+      let newSteps = null;
+
+      switch (slug) {
+        case "caesar": {
+          const shift = parseInt(key) || 3;
+          result = mode === "encrypt" ? encryptCaesar(input, shift) : decryptCaesar(input, shift);
+          newSteps = getCaesarSteps(input, shift, mode);
+          break;
+        }
+        case "vigenere": {
+          const k = (key || "KEY").toUpperCase().replace(/[^A-Z]/g, "") || "KEY";
+          result = mode === "encrypt" ? encryptVigenere(input, k) : decryptVigenere(input, k);
+          newSteps = { type: "vigenere", data: getVigenereSteps(input.toUpperCase(), k, mode) };
+          break;
+        }
+        case "railfence": {
+          const r = parseInt(key) || 3;
+          result = mode === "encrypt" ? encryptRailFence(input, r) : decryptRailFence(input, r);
+          newSteps = { type: "railfence", text: input.toUpperCase(), rails: r };
+          break;
+        }
+        case "playfair": {
+          const k = (key || "KEYWORD").toUpperCase().replace(/[^A-Z]/g, "") || "KEYWORD";
+          result = mode === "encrypt" ? encryptPlayfair(input, k) : decryptPlayfair(input, k);
+          newSteps = { type: "playfair", data: getPlayfairSteps(input, k, mode) };
+          break;
+        }
+        default:
+          result = input;
+      }
+
+      setOutput(result);
+      setSteps(newSteps);
+    } catch (e) {
+      setError(e.message || "An error occurred.");
+      setOutput("");
+      setSteps(null);
+    } finally {
+      setIsRunning(false);
+    }
+  }, [slug, input, key, mode]);
+
+  // Auto-run on input/key/mode change
+  useEffect(() => {
+    if (input.trim()) run();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [input, key, mode, slug]);
+
+  const copy = () => {
+    if (!output) return;
+    navigator.clipboard.writeText(output);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  const swap = () => {
+    setInput(output);
+    setOutput("");
+    setSteps(null);
+    setError("");
+    setMode((m) => (m === "encrypt" ? "decrypt" : "encrypt"));
+  };
+
+  const reset = () => {
+    setInput(meta?.defaultText || "");
+    setKey(meta?.defaultKey || "");
+    setOutput("");
+    setSteps(null);
+    setError("");
+    setMode("encrypt");
+  };
+
+  if (!meta) {
+    return (
+      <div className={styles.notFound}>
+        <div className={styles.notFoundInner}>
+          <span className={styles.nfCode}>404</span>
+          <h1 className={styles.nfTitle}>Simulation not found</h1>
+          <p className={styles.nfDesc}>
+            No simulation page exists for <strong>{slug}</strong> yet.
+          </p>
+          <Link href="/simulation" className={styles.nfBack}>← Back to Simulation Hub</Link>
+        </div>
+      </div>
+    );
+  }
+
+  const colorVar = {
+    accent: "var(--accent)",
+    purple: "var(--purple)",
+    green: "var(--green)",
+    orange: "var(--orange)",
+  }[meta.color] || "var(--accent)";
+
+  return (
+    <div className={styles.page}>
+      <div className={styles.container}>
+
+        {/* ── Breadcrumb ─────────────────────────────── */}
+        <nav className={styles.breadcrumb}>
+          <Link href="/" className={styles.breadLink}>Home</Link>
+          <span className={styles.breadSep}>/</span>
+          <Link href="/simulation" className={styles.breadLink}>Simulations</Link>
+          <span className={styles.breadSep}>/</span>
+          <span className={styles.breadCurrent}>{meta.name}</span>
+        </nav>
+
+        {/* ── Hero ────────────────────────────────────── */}
+        <div className={styles.hero} style={{ "--sim-color": colorVar }}>
+          <div className={styles.heroLeft}>
+            <div className={styles.heroBadge}>
+              <span className={styles.badgePulse} />
+              Interactive Simulation
+            </div>
+            <h1 className={styles.heroTitle}>
+              <span className={styles.heroIcon} style={{ background: `${colorVar}22`, border: `1px solid ${colorVar}44`, color: colorVar }}>
+                {meta.icon}
+              </span>
+              {meta.name}
+            </h1>
+            <p className={styles.heroTagline}>{meta.tagline}</p>
+            <p className={styles.heroDesc}>{meta.description}</p>
+            <div className={styles.heroPills}>
+              <span className={styles.pill}>{meta.category}</span>
+              <span className={`${styles.pill} ${styles.pillFormula}`}>{meta.formula}</span>
+            </div>
+          </div>
+          <div className={styles.heroRight}>
+            <div className={styles.statsGrid}>
+              <div className={styles.statBox} style={{ "--c": colorVar }}>
+                <span className={styles.statIcon}>⌨</span>
+                <span className={styles.statVal}>{input.replace(/\s+/g, "").length}</span>
+                <span className={styles.statLabel}>Input chars</span>
+              </div>
+              <div className={styles.statBox} style={{ "--c": colorVar }}>
+                <span className={styles.statIcon}>🔑</span>
+                <span className={styles.statVal}>{key || "—"}</span>
+                <span className={styles.statLabel}>Key</span>
+              </div>
+              <div className={styles.statBox} style={{ "--c": colorVar }}>
+                <span className={styles.statIcon}>✦</span>
+                <span className={styles.statVal}>{output.replace(/\s+/g, "").length || "—"}</span>
+                <span className={styles.statLabel}>Output chars</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* ── Controls ─────────────────────────────────── */}
+        <div className={styles.labCard}>
+          <div className={styles.labHeader}>
+            <span className={styles.labTitle}>Encryption Lab</span>
+            <div className={styles.modeSwitch}>
+              {["encrypt", "decrypt"].map((m) => (
+                <button
+                  key={m}
+                  className={`${styles.modeBtn} ${mode === m ? styles.modeBtnActive : ""}`}
+                  style={mode === m ? { "--m-color": colorVar } : {}}
+                  onClick={() => { setMode(m); setOutput(""); setSteps(null); setError(""); }}
+                >
+                  {m === "encrypt" ? "🔒 Encrypt" : "🔓 Decrypt"}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className={styles.inputRow}>
+            {/* Plaintext */}
+            <div className={styles.inputGroup}>
+              <label className={styles.inputLabel}>
+                {mode === "encrypt" ? "Plaintext" : "Ciphertext"}
+                <span className={styles.charCount}>{input.length} chars</span>
+              </label>
+              <textarea
+                className={styles.textarea}
+                rows={4}
+                placeholder={mode === "encrypt" ? "Enter text to encrypt…" : "Enter text to decrypt…"}
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+              />
+            </div>
+
+            {/* Key */}
+            <div className={styles.keyBlock}>
+              <label className={styles.inputLabel}>{meta.keyLabel}</label>
+              <input
+                className={styles.keyInput}
+                type={meta.keyType}
+                min={meta.keyType === "number" ? "2" : undefined}
+                max={meta.keyType === "number" ? "25" : undefined}
+                placeholder={meta.keyPlaceholder}
+                value={key}
+                onChange={(e) => setKey(e.target.value)}
+              />
+              <div className={styles.keyActions}>
+                <button
+                  className={`${styles.actionBtn} ${styles.swapBtn}`}
+                  onClick={swap}
+                  disabled={!output}
+                  title="Swap input/output and flip mode"
+                >
+                  ⇄ Swap
+                </button>
+                <button className={`${styles.actionBtn} ${styles.resetBtn}`} onClick={reset} title="Reset all">
+                  ↺ Reset
+                </button>
+              </div>
+            </div>
+
+            {/* Output */}
+            <div className={styles.inputGroup}>
+              <label className={styles.inputLabel}>
+                {mode === "encrypt" ? "Ciphertext" : "Plaintext"}
+                {output && (
+                  <button className={styles.copyBtn} onClick={copy}>
+                    {copied ? "✓ Copied!" : "Copy"}
+                  </button>
+                )}
+              </label>
+              <div className={`${styles.outputBox} ${output ? styles.outputFilled : ""} ${error ? styles.outputError : ""}`}
+                style={output ? { "--out-color": colorVar } : {}}
+              >
+                {error ? (
+                  <span className={styles.errorMsg}>⚠ {error}</span>
+                ) : output ? (
+                  <span className={styles.outputText}>{output}</span>
+                ) : (
+                  <span className={styles.outputPlaceholder}>Result will appear here…</span>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* ── Visualizer ──────────────────────────────── */}
+        {steps && (
+          <div className={styles.vizSection}>
+            <div className={styles.vizSectionHeader}>
+              <h2 className={styles.vizSectionTitle} style={{ "--v-color": colorVar }}>
+                Step-by-Step Visualization
+              </h2>
+              <span className={styles.vizSectionSub}>See exactly how each character is transformed</span>
+            </div>
+
+            {/* Caesar */}
+            {slug === "caesar" && Array.isArray(steps) && (
+              <CaesarStepVisualizer steps={steps} mode={mode} />
+            )}
+
+            {/* Vigenere */}
+            {slug === "vigenere" && steps?.type === "vigenere" && (
+              <div className={styles.vizWrapper}>
+                <VigenereVisualizer stepsData={steps.data} mode={mode} />
+              </div>
+            )}
+
+            {/* Rail Fence */}
+            {slug === "railfence" && steps?.type === "railfence" && (
+              <RailFenceEnhanced text={steps.text} rails={steps.rails} />
+            )}
+
+            {/* Playfair */}
+            {slug === "playfair" && steps?.type === "playfair" && (
+              <div className={styles.vizWrapper}>
+                <PlayfairVisualizer stepsData={steps.data} mode={mode} />
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* ── Theory Panel ─────────────────────────────── */}
+        <div className={styles.theoryRow}>
+          <div className={styles.infoCard} style={{ "--ic": colorVar }}>
+            <div className={styles.infoCardBar} />
+            <h3 className={styles.infoCardTitle}>About {meta.name}</h3>
+            <p className={styles.infoCardDesc}>{meta.description}</p>
+            <div className={styles.formulaChip}>
+              <span className={styles.formulaLabel}>Formula</span>
+              <code className={styles.formulaCode}>{meta.formula}</code>
+            </div>
+          </div>
+
+          <div className={styles.quickNav}>
+            <h3 className={styles.quickNavTitle}>Explore Further</h3>
+            <Link href={`/cipher/${slug}`} className={styles.quickNavLink}>
+              📖 Theory Page
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </Link>
+            <Link href={`/tools/${slug}`} className={styles.quickNavLink}>
+              ⚡ Interactive Tool
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </Link>
+            <Link href="/simulation" className={styles.quickNavLink}>
+              ◈ All Simulations
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </Link>
+            <Link href="/compare" className={styles.quickNavLink}>
+              ⇄ Compare Algorithms
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </Link>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  );
+}
