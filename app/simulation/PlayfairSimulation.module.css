@@ -1,0 +1,193 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  animation: fadeUp 0.4s ease both;
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Header ── */
+.header   { display: flex; flex-direction: column; gap: 4px; }
+.title    { font-size: 17px; font-weight: 700; color: var(--text); font-family: var(--font-display); }
+.subtitle { font-size: 12px; color: var(--text-subtle); }
+
+/* ── Player ── */
+.playerOuter { display: flex; flex-direction: column; gap: 8px; }
+.progressRow { display: flex; align-items: center; gap: 10px; }
+.progressTrack { flex: 1; height: 3px; background: var(--border); border-radius: 2px; overflow: hidden; }
+.progressFill  { height: 100%; border-radius: 2px; transition: width 0.3s ease; }
+.pInfo { font-family: var(--font-mono); font-size: 11px; white-space: nowrap; }
+.statusBadge {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: 11px; font-weight: 600; padding: 3px 10px;
+  border-radius: 100px; border: 1px solid;
+  letter-spacing: 0.04em; text-transform: uppercase;
+}
+.statusDot { width: 5px; height: 5px; border-radius: 50%; animation: dotPulse 1.2s ease-in-out infinite; }
+@keyframes dotPulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+.playerBar { display: flex; align-items: center; gap: 8px; padding: 10px 16px; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 12px; flex-wrap: wrap; }
+.playerBtns { display: flex; gap: 6px; flex-wrap: wrap; }
+.pBtn {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 7px 13px; font-size: 12px; font-weight: 700;
+  border-radius: 9px; border: 1px solid var(--border);
+  background: var(--card); color: var(--text-muted);
+  cursor: pointer; transition: all 0.18s;
+}
+.pBtn:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); background: var(--accent-glow); transform: translateY(-1px); }
+.pBtn:disabled { opacity: 0.35; cursor: not-allowed; transform: none; }
+.pBtnPrimary { color: white !important; box-shadow: 0 4px 14px rgba(0,0,0,0.15); }
+.pBtnPrimary:hover:not(:disabled) { opacity: 0.9; transform: translateY(-1px); }
+
+.speedGroup { display: flex; align-items: center; gap: 6px; margin-left: auto; }
+.speedLabel { font-size: 11px; font-weight: 600; color: var(--text-subtle); text-transform: uppercase; letter-spacing: 0.05em; }
+.speedSel   { font-size: 12px; font-weight: 600; padding: 5px 9px; border-radius: 8px; border: 1px solid var(--border); background: var(--card); color: var(--text); cursor: pointer; outline: none; transition: border-color 0.18s; }
+.speedSel:focus { border-color: var(--accent); }
+
+/* Progress dots */
+.pairDots { display: flex; gap: 5px; flex-wrap: wrap; padding: 2px 0; }
+.pDot { width: 9px; height: 9px; border-radius: 50%; background: var(--border-strong); transition: background 0.25s, transform 0.25s, box-shadow 0.25s; }
+.pDotDone { box-shadow: 0 0 5px currentColor; }
+.pDotActive { transform: scale(1.6); box-shadow: 0 0 8px currentColor; animation: dotPulse 1s ease-in-out infinite; }
+
+/* ── Layout ── */
+.layout {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 24px;
+  align-items: start;
+}
+
+/* ── Key Matrix ── */
+.matrixWrap { position: relative; display: flex; flex-direction: column; gap: 10px; }
+.matrixHeader { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.matrixTitle { font-family: var(--font-display); font-size: 15px; font-weight: 700; color: var(--text); }
+.ruleBadge {
+  font-size: 12px; font-weight: 700; padding: 4px 12px;
+  border-radius: 100px; border: 1px solid;
+  letter-spacing: 0.03em;
+  animation: rulePop 0.4s cubic-bezier(0.34,1.56,0.64,1) both;
+}
+@keyframes rulePop {
+  from { opacity: 0; transform: scale(0.6); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+.matrixGrid {
+  display: grid;
+  grid-template-columns: repeat(5, 44px);
+  gap: 4px;
+}
+.mCell {
+  width: 44px; height: 44px;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-mono); font-size: 16px; font-weight: 700;
+  border-radius: 8px;
+  background: var(--card-secondary);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  transition: background 0.2s, border-color 0.2s, color 0.2s, box-shadow 0.2s, transform 0.2s;
+  position: relative;
+}
+.mCell:hover { transform: scale(1.06); }
+.mCellInput  { transform: scale(1.1); z-index: 2; }
+.mCellOutput { transform: scale(1.1); z-index: 2; }
+
+.mCellBadge {
+  position: absolute; top: -5px; right: -5px;
+  font-size: 7px; font-weight: 800; text-transform: uppercase;
+  color: white; padding: 1px 4px; border-radius: 4px;
+  letter-spacing: 0.05em;
+}
+
+@keyframes mCellPop {
+  0%   { transform: scale(0.6); opacity: 0; }
+  60%  { transform: scale(1.2); opacity: 1; }
+  100% { transform: scale(1.1); }
+}
+
+.matrixNote { font-size: 11px; color: var(--text-subtle); font-style: italic; }
+
+/* ── SVG connector ── */
+.connectorSvg {
+  position: absolute;
+  top: 38px; /* below header */
+  left: 0;
+  pointer-events: none;
+  z-index: 3;
+  overflow: visible;
+}
+@keyframes lineGrowSvg {
+  from { stroke-dashoffset: 200; opacity: 0; }
+  to   { stroke-dashoffset: 0; opacity: 1; }
+}
+
+/* ── Right Panel ── */
+.rightPanel { display: flex; flex-direction: column; gap: 20px; }
+
+/* Pairs list */
+.pairsSection { display: flex; flex-direction: column; gap: 8px; }
+.sectionTitle { font-family: var(--font-display); font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+.pairsList { display: flex; flex-direction: column; gap: 6px; }
+
+.pairRow {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 14px;
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 10px;
+  transition: all 0.2s;
+}
+.pairRowActive { font-weight: 700; }
+.pairRowDone   { opacity: 0.65; }
+
+.pairIdx   { font-family: var(--font-mono); font-size: 11px; color: var(--text-subtle); min-width: 20px; }
+.pairChars { display: flex; align-items: center; gap: 8px; flex: 1; }
+.pairIn    { font-family: var(--font-mono); font-size: 16px; font-weight: 700; color: var(--text); letter-spacing: 0.1em; transition: color 0.2s; }
+.pairArrow { font-size: 12px; color: var(--text-subtle); }
+.pairOut   { font-family: var(--font-mono); font-size: 16px; font-weight: 700; color: var(--text-muted); letter-spacing: 0.1em; transition: color 0.2s; }
+.pairRule  { font-size: 16px; transition: opacity 0.2s; }
+
+@keyframes pairHighlight {
+  from { opacity: 0; transform: translateX(-6px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+/* Step detail */
+.stepDetail  { display: flex; flex-direction: column; gap: 10px; animation: fadePop 0.3s ease both; }
+.detailHeader { font-family: var(--font-display); font-size: 14px; font-weight: 700; color: var(--text); }
+.detailGrid {
+  display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 12px; padding: 16px 20px;
+}
+.detailItem  { display: flex; flex-direction: column; gap: 4px; }
+.dLabel      { font-family: var(--font-mono); font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-subtle); }
+.dVal        { font-family: var(--font-mono); font-size: 22px; font-weight: 800; letter-spacing: 0.12em; }
+.dFormula    { font-family: var(--font-mono); font-size: 12px; font-weight: 600; color: var(--text-muted); }
+
+.ruleFull {
+  display: flex; align-items: center; gap: 10px;
+  font-size: 13px; color: var(--text-muted);
+  background: var(--card-secondary); border: 1px solid var(--border);
+  border-radius: 10px; padding: 12px 16px;
+}
+.ruleIcon { font-size: 18px; }
+
+/* Idle hint */
+.idleHint { text-align: center; font-size: 13px; color: var(--text-subtle); font-style: italic; padding: 16px 0; }
+
+@keyframes fadePop {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 900px) {
+  .layout { grid-template-columns: 1fr; }
+  .matrixGrid { grid-template-columns: repeat(5, 40px); }
+  .mCell { width: 40px; height: 40px; font-size: 14px; }
+}

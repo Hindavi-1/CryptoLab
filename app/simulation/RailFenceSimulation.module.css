@@ -1,0 +1,259 @@
+.wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.5rem;
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--foreground);
+}
+
+.subtitle {
+  font-size: 0.85rem;
+  color: var(--text-subtle);
+}
+
+/* Player Bar */
+.playerOuter {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  background: var(--card-secondary);
+  padding: 1rem;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+}
+
+.progressRow {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.progressTrack {
+  flex: 1;
+  height: 6px;
+  background: var(--border);
+  border-radius: 3px;
+  overflow: hidden;
+  position: relative;
+}
+
+.progressFill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.3s ease;
+}
+
+.progressText {
+  font-size: 0.8rem;
+  font-weight: 500;
+  min-width: 40px;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.statusBadge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border: 1px solid;
+}
+
+.statusDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  animation: pulse 1.5s infinite ease-in-out;
+}
+
+.playerBar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.playerBtns {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.pBtn {
+  background: var(--card);
+  border: 1px solid var(--border);
+  color: var(--foreground);
+  padding: 0.5rem 0.8rem;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+.pBtn:hover:not(:disabled) {
+  background: var(--card-secondary);
+}
+.pBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.pBtnPrimary {
+  color: white;
+  border: none;
+}
+.pBtnPrimary:hover:not(:disabled) {
+  filter: brightness(1.1);
+}
+.speedGroup {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+.speedLabel {
+  font-size: 0.8rem;
+  color: var(--text-subtle);
+  font-weight: 500;
+}
+.speedSel {
+  background: var(--card);
+  border: 1px solid var(--border);
+  color: var(--foreground);
+  padding: 0.4rem 0.5rem;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  outline: none;
+  cursor: pointer;
+}
+
+/* Grid layout */
+.gridContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  background: var(--card-secondary);
+  padding: 2rem;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  overflow-x: auto;
+}
+
+.rfGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.rfRow {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.rfRailLabel {
+  min-width: 60px;
+  text-align: right;
+  font-weight: 600;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.rfCells {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.rfCell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  border: 1px dashed var(--border);
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 1rem;
+  transition: all 0.2s cubic-bezier(0.34,1.56,0.64,1);
+}
+
+.rfCellEmpty {
+  width: 32px;
+  height: 32px;
+}
+
+.rfCellFilled {
+  border-style: solid;
+}
+
+.rfCellActive {
+  transform: scale(1.15);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  z-index: 2;
+}
+
+.outputReadout {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  padding-top: 1rem;
+  border-top: 1px dashed var(--border);
+}
+
+.readoutLabel {
+  font-size: 0.85rem;
+  color: var(--text-subtle);
+  font-weight: 600;
+}
+
+.readoutTokens {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.readoutChunk {
+  font-family: var(--font-mono);
+  font-weight: 600;
+  padding: 0.4rem 0.8rem;
+  border-radius: 6px;
+  border: 1px solid;
+  animation: fadePop 0.3s ease both;
+}
+
+@keyframes pulse {
+  0% { opacity: 1; }
+  50% { opacity: 0.4; }
+  100% { opacity: 1; }
+}
+
+@keyframes cellPopIn {
+  from { opacity: 0; transform: scale(0.5); }
+  to { opacity: 1; transform: scale(1.15); }
+}
+
+@keyframes fadePop {
+  from { opacity: 0; transform: translateY(5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
