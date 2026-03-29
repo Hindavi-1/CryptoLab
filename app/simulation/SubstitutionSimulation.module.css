@@ -1,0 +1,153 @@
+.wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  background: var(--card);
+  padding: 1.5rem;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  animation: fadeUp 0.4s ease both;
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.header { display: flex; flex-direction: column; gap: 4px; }
+.title { font-size: 1.1rem; font-weight: 700; color: var(--text); font-family: var(--font-display); }
+.subtitle { font-size: 0.85rem; color: var(--text-subtle); font-family: var(--font-mono); }
+
+/* Player bar (Reused) */
+.playerOuter { display: flex; flex-direction: column; gap: 8px; }
+.progressRow { display: flex; align-items: center; gap: 10px; }
+.progressTrack { flex: 1; height: 3px; background: var(--border); border-radius: 2px; position: relative; overflow: hidden; }
+.progressFill { height: 100%; transition: width 0.3s ease; }
+.progressText { font-family: var(--font-mono); font-size: 11px; white-space: nowrap; }
+.statusBadge { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 100px; border: 1px solid; text-transform: uppercase; white-space: nowrap; }
+.statusDot { width: 5px; height: 5px; border-radius: 50%; animation: dotPulse 1.2s ease-in-out infinite; }
+@keyframes dotPulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+.playerBar { display: flex; align-items: center; gap: 8px; padding: 10px 16px; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 12px; flex-wrap: wrap; }
+.playerBtns { display: flex; gap: 6px; flex-wrap: wrap; }
+.pBtn { display: inline-flex; align-items: center; gap: 4px; padding: 7px 13px; font-size: 12px; font-weight: 700; border-radius: 9px; border: 1px solid var(--border); background: var(--card); color: var(--text-muted); cursor: pointer; transition: all 0.18s; }
+.pBtn:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); background: var(--accent-glow); transform: translateY(-1px); }
+.pBtn:disabled { opacity: 0.35; cursor: not-allowed; transform: none; }
+.pBtnPrimary { color: white !important; box-shadow: 0 4px 14px rgba(0,0,0,0.15); }
+.pBtnPrimary:hover:not(:disabled) { opacity: 0.9; transform: translateY(-1px); }
+.speedGroup { display: flex; align-items: center; gap: 6px; margin-left: auto; }
+.speedLabel { font-size: 11px; font-weight: 600; color: var(--text-subtle); text-transform: uppercase; letter-spacing: 0.05em; }
+.speedSel { font-size: 12px; font-weight: 600; padding: 5px 9px; border-radius: 8px; border: 1px solid var(--border); background: var(--card); color: var(--text); cursor: pointer; outline: none; transition: border-color 0.18s; }
+.speedSel:focus { border-color: var(--accent); }
+
+/* Main layout */
+.contentGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+/* Mapping Zone */
+.mappingZone {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2rem;
+  padding: 3rem 1rem;
+  background: var(--card-secondary);
+  border: 1px dashed var(--border);
+  border-radius: 12px;
+  min-height: 200px;
+}
+
+.mapCharBox {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  padding: 16px 24px;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+}
+
+.mapLabel {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--text-subtle);
+  letter-spacing: 0.05em;
+}
+
+.mapCharIn {
+  font-family: var(--font-mono);
+  font-size: 3rem;
+  font-weight: 800;
+  color: var(--text);
+  line-height: 1;
+}
+
+.mapCharOut {
+  font-family: var(--font-mono);
+  font-size: 3rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.mapArrowBox {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.mapArrow {
+  font-size: 2.5rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.mapRule {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--text-subtle);
+  font-style: italic;
+}
+
+@keyframes slideDownIn {
+  0% { opacity: 0; transform: translateY(-20px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideUpIn {
+  0% { opacity: 0; transform: translateY(20px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadePop {
+  0% { opacity: 0; transform: scale(0.8); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+.idleHint {
+  text-align: center;
+  font-size: 14px;
+  color: var(--text-subtle);
+  font-style: italic;
+  font-family: var(--font-mono);
+  padding: 3rem 1rem;
+  background: var(--card-secondary);
+  border: 1px dashed var(--border);
+  border-radius: 12px;
+}
+
+/* Text Strip */
+.textTrack { display: flex; flex-direction: column; gap: 1rem; }
+.alignStrip { display: flex; align-items: center; gap: 12px; background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 10px 16px; overflow-x: auto; }
+.stripLabel { font-family: var(--font-mono); font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-subtle); min-width: 60px; }
+.stripLetters { display: flex; flex-wrap: nowrap; gap: 4px; }
+.stripLetter { width: 32px; height: 32px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-family: var(--font-mono); font-size: 15px; font-weight: 700; border-radius: 8px; background: var(--card-secondary); border: 1px solid var(--border); color: var(--text); }
+.stripResult { color: var(--green); background: color-mix(in srgb, var(--green) 15%, transparent); border-color: var(--green); }
+.stripPass { opacity: 0.35; font-style: italic; }
+.stripActive { background: var(--card); }

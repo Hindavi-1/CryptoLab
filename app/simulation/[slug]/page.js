@@ -6,11 +6,19 @@ import {
   encryptVigenere, decryptVigenere, getVigenereSteps,
   encryptPlayfair, decryptPlayfair, getPlayfairSteps,
   encryptRailFence, decryptRailFence,
+  encryptColumnar, decryptColumnar, buildColumnarTrace,
+  encryptAffine, decryptAffine, getAffineSteps,
+  encryptHill, decryptHill, getHillSteps,
+  encryptSubstitution, decryptSubstitution, getSubstitutionSteps
 } from "../../../lib/ciphers/index";
 import CaesarSimulation from "../CaesarSimulation";
 import VigenereSimulation from "../VigenereSimulation";
 import PlayfairSimulation from "../PlayfairSimulation";
 import RailFenceSimulation from "../RailFenceSimulation";
+import ColumnarSimulation from "../ColumnarSimulation";
+import AffineSimulation from "../AffineSimulation";
+import HillSimulation from "../HillSimulation";
+import SubstitutionSimulation from "../SubstitutionSimulation";
 import styles from "./simulationPage.module.css";
 
 // ─── Cipher metadata ────────────────────────────────────────────────────────
@@ -71,6 +79,62 @@ const CIPHER_META = {
     keyPlaceholder: "KEYWORD",
     description: "Encrypts pairs of letters using a 5×5 key matrix. Three geometric rules — row, column, and rectangle — govern the substitution.",
   },
+  columnar: {
+    name: "Columnar Transposition",
+    tagline: "Rearrange columns by keyword rank",
+    icon: "▤",
+    color: "purple",
+    category: "Classical · Transposition",
+    formula: "Read grid columns in key order",
+    defaultText: "HELLO WORLD",
+    defaultKey: "KEYWORD",
+    keyLabel: "Keyword",
+    keyType: "text",
+    keyPlaceholder: "KEYWORD",
+    description: "Writes plaintext in rows under a keyword, then reads out columns in alphabetical order of the keyword characters.",
+  },
+  affine: {
+    name: "Affine Cipher",
+    tagline: "Linear equation substitution",
+    icon: "ƒ(x)",
+    color: "accent",
+    category: "Classical · Monoalphabetic",
+    formula: "C = (a × P + b) mod 26",
+    defaultText: "HELLO WORLD",
+    defaultKey: "5,8",
+    keyLabel: "Key (a, b)",
+    keyType: "text",
+    keyPlaceholder: "e.g. 5,8",
+    description: "Each letter is mapped to its numeric equivalent, multiplied by 'a', shifted by 'b', and converted back to a letter.",
+  },
+  hill: {
+    name: "Hill Cipher",
+    tagline: "Matrix-based polygraphic substitution",
+    icon: "▦",
+    color: "orange",
+    category: "Classical · Polygraphic",
+    formula: "C = K × P mod 26",
+    defaultText: "HELLO WORLD",
+    defaultKey: "9,4,5,7",
+    keyLabel: "Key Matrix (comma separated)",
+    keyType: "text",
+    keyPlaceholder: "e.g. 9,4,5,7",
+    description: "Encrypts blocks of letters using linear algebra. The key is an invertible square matrix modulo 26.",
+  },
+  substitution: {
+    name: "Substitution Cipher",
+    tagline: "Arbitrary alphabet mapping",
+    icon: "⇄",
+    color: "green",
+    category: "Classical · Monoalphabetic",
+    formula: "Permutation of alphabet",
+    defaultText: "HELLO WORLD",
+    defaultKey: "ZYXWVUTSRQPONMLKJIHGFEDCBA",
+    keyLabel: "26-Letter Alphabet",
+    keyType: "text",
+    keyPlaceholder: "A-Z jumbled",
+    description: "Replaces each letter with another according to a fixed, jumbled 26-letter alphabet.",
+  },
 };
 
 // ─── Main Simulation Page ───────────────────────────────────────────────────
@@ -119,6 +183,36 @@ export default function SimulationPage({ params }) {
           const k = (key || "KEYWORD").toUpperCase().replace(/[^A-Z]/g, "") || "KEYWORD";
           result = mode === "encrypt" ? encryptPlayfair(input, k) : decryptPlayfair(input, k);
           newSteps = { type: "playfair", data: getPlayfairSteps(input, k, mode) };
+          break;
+        }
+        case "columnar": {
+          const k = (key || "KEYWORD").toUpperCase().replace(/[^A-Z]/g, "") || "KEYWORD";
+          result = mode === "encrypt" ? encryptColumnar(input, k) : decryptColumnar(input, k);
+          newSteps = { type: "columnar", data: buildColumnarTrace(input, k, "X", mode) };
+          break;
+        }
+        case "affine": {
+          const parts = key.split(",");
+          const a = parseInt(parts[0]) || 5;
+          const b = parseInt(parts[1]) || (key.includes(",") ? 0 : 8);
+          const affineKey = { a, b };
+          result = mode === "encrypt" ? encryptAffine(input, affineKey) : decryptAffine(input, affineKey);
+          newSteps = { type: "affine", data: getAffineSteps(input, affineKey, mode) };
+          break;
+        }
+        case "hill": {
+          result = mode === "encrypt" ? encryptHill(input, key) : decryptHill(input, key);
+          newSteps = { type: "hill", data: getHillSteps(input, key, mode) };
+          if (newSteps.data.error) {
+             throw new Error(newSteps.data.error);
+          }
+          break;
+        }
+        case "substitution": {
+          const k = (key || "ZYXWVUTSRQPONMLKJIHGFEDCBA").toUpperCase().replace(/[^A-Z]/g, "").slice(0, 26);
+          if (k.length < 26) throw new Error("Key must be 26 unique letters.");
+          result = mode === "encrypt" ? encryptSubstitution(input, k) : decryptSubstitution(input, k);
+          newSteps = { type: "substitution", data: getSubstitutionSteps(input, k, mode) };
           break;
         }
         default:
@@ -356,6 +450,26 @@ export default function SimulationPage({ params }) {
             {/* Playfair */}
             {slug === "playfair" && steps?.type === "playfair" && (
               <PlayfairSimulation stepsData={steps.data} mode={mode} colorVar={colorVar} />
+            )}
+
+            {/* Columnar */}
+            {slug === "columnar" && steps?.type === "columnar" && (
+              <ColumnarSimulation trace={steps.data} mode={mode} colorVar={colorVar} />
+            )}
+
+            {/* Affine */}
+            {slug === "affine" && steps?.type === "affine" && (
+              <AffineSimulation stepsData={steps.data} mode={mode} colorVar={colorVar} />
+            )}
+
+            {/* Hill */}
+            {slug === "hill" && steps?.type === "hill" && (
+              <HillSimulation stepsData={steps.data} mode={mode} colorVar={colorVar} />
+            )}
+
+            {/* Substitution */}
+            {slug === "substitution" && steps?.type === "substitution" && (
+              <SubstitutionSimulation stepsData={steps.data} mode={mode} colorVar={colorVar} />
             )}
           </div>
         )}

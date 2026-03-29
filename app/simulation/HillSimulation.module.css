@@ -1,0 +1,217 @@
+.wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  background: var(--card);
+  padding: 1.5rem;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  animation: fadeUp 0.4s ease both;
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.header { display: flex; flex-direction: column; gap: 4px; }
+.title { font-size: 1.1rem; font-weight: 700; color: var(--text); font-family: var(--font-display); }
+.subtitle { font-size: 0.85rem; color: var(--text-subtle); font-family: var(--font-mono); }
+
+/* Player bar (Reused) */
+.playerOuter { display: flex; flex-direction: column; gap: 8px; }
+.progressRow { display: flex; align-items: center; gap: 10px; }
+.progressTrack { flex: 1; height: 3px; background: var(--border); border-radius: 2px; position: relative; overflow: hidden; }
+.progressFill { height: 100%; transition: width 0.3s ease; }
+.progressText { font-family: var(--font-mono); font-size: 11px; white-space: nowrap; }
+.statusBadge { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 100px; border: 1px solid; text-transform: uppercase; white-space: nowrap; }
+.statusDot { width: 5px; height: 5px; border-radius: 50%; animation: dotPulse 1.2s ease-in-out infinite; }
+@keyframes dotPulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+.playerBar { display: flex; align-items: center; gap: 8px; padding: 10px 16px; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 12px; flex-wrap: wrap; }
+.playerBtns { display: flex; gap: 6px; flex-wrap: wrap; }
+.pBtn { display: inline-flex; align-items: center; gap: 4px; padding: 7px 13px; font-size: 12px; font-weight: 700; border-radius: 9px; border: 1px solid var(--border); background: var(--card); color: var(--text-muted); cursor: pointer; transition: all 0.18s; }
+.pBtn:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); background: var(--accent-glow); transform: translateY(-1px); }
+.pBtn:disabled { opacity: 0.35; cursor: not-allowed; transform: none; }
+.pBtnPrimary { color: white !important; box-shadow: 0 4px 14px rgba(0,0,0,0.15); }
+.pBtnPrimary:hover:not(:disabled) { opacity: 0.9; transform: translateY(-1px); }
+.speedGroup { display: flex; align-items: center; gap: 6px; margin-left: auto; }
+.speedLabel { font-size: 11px; font-weight: 600; color: var(--text-subtle); text-transform: uppercase; letter-spacing: 0.05em; }
+.speedSel { font-size: 12px; font-weight: 600; padding: 5px 9px; border-radius: 8px; border: 1px solid var(--border); background: var(--card); color: var(--text); cursor: pointer; outline: none; transition: border-color 0.18s; }
+.speedSel:focus { border-color: var(--accent); }
+
+/* Math Zone Grid */
+.mainGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.textTrack {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  background: var(--card-secondary);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px;
+}
+
+.trackLabel {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-subtle);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.blocks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.charBlock {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  min-width: 44px;
+  min-height: 48px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--card);
+  padding: 6px 10px;
+  transition: all 0.3s cubic-bezier(0.34,1.56,0.64,1);
+}
+
+.blockRowIn {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  letter-spacing: 2px;
+  font-size: 1.1rem;
+}
+
+.blockRowOut {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  letter-spacing: 2px;
+  font-size: 1.1rem;
+  margin-top: 4px;
+  text-align: center;
+  animation: fadeUp 0.3s;
+}
+
+.blockActive {
+  transform: scale(1.15);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  z-index: 2;
+}
+
+/* Equation Math Zone */
+.mathZone {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2.5rem 1rem;
+  background: var(--card-secondary);
+  border: 1px dashed var(--border);
+  border-radius: 12px;
+  min-height: 200px;
+  overflow-x: auto;
+}
+
+.equationGrid {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: nowrap;
+}
+
+.mathOp {
+  font-size: 1.5rem;
+  color: var(--text-subtle);
+  font-family: var(--font-mono);
+  font-weight: 700;
+}
+
+/* Bracket Matrix Container */
+.matrixContainer {
+  display: flex;
+  align-items: stretch;
+}
+
+.matrixBracket {
+  width: 12px;
+  border: 2px solid var(--text-subtle);
+  border-right: none;
+  border-radius: 4px 0 0 4px;
+  opacity: 0.7;
+}
+
+.matrixBracketRight {
+  width: 12px;
+  border: 2px solid var(--text-subtle);
+  border-left: none;
+  border-radius: 0 4px 4px 0;
+  opacity: 0.7;
+}
+
+.matrixBox {
+  display: grid;
+  padding: 4px;
+  column-gap: 16px;
+  row-gap: 8px;
+}
+
+.matrixCell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-mono);
+  font-size: 1.3rem;
+  font-weight: 700;
+  min-width: 2rem;
+  height: 2.5rem;
+  color: var(--text);
+  gap: 6px;
+}
+
+.matrixChar {
+  font-size: 1rem;
+  color: var(--text-subtle);
+  font-weight: 500;
+}
+
+.resultCell {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  font-family: var(--font-mono);
+  gap: 2px;
+  padding: 0 10px;
+  min-height: 2.5rem;
+}
+
+.resultFormula {
+  font-size: 0.9rem;
+  color: var(--text-subtle);
+}
+
+.resultMod {
+  font-size: 1rem;
+  color: var(--text);
+}
+
+.resultChar {
+  font-size: 1.3rem;
+  font-weight: 800;
+}
+
+.idleHint {
+  text-align: center;
+  font-size: 14px;
+  color: var(--text-subtle);
+  font-style: italic;
+  font-family: var(--font-mono);
+}
