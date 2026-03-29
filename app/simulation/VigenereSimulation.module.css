@@ -173,7 +173,7 @@
 
 .contentGrid {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  grid-template-columns: minmax(280px, 35%) 1fr;
   gap: 1.5rem;
   align-items: start;
 }
@@ -229,7 +229,8 @@
 
 /* ── Vigenère Table ── */
 .tableWrap {
-  overflow-x: auto;
+  overflow: auto;
+  max-height: 500px;
   border-radius: 14px;
   border: 1px solid var(--border);
   box-shadow: var(--shadow-sm);
@@ -247,13 +248,14 @@
   background: var(--card-secondary); color: var(--text-subtle);
   font-size: 9px; padding: 6px; text-align: center;
   border-right: 1px solid var(--border); border-bottom: 1px solid var(--border);
-  position: sticky; left: 0; z-index: 3;
+  position: sticky; top: 0; left: 0; z-index: 5;
 }
 .headerCell {
   padding: 5px 4px; text-align: center;
   color: var(--text-subtle); font-weight: 700;
   border-bottom: 1px solid var(--border);
   background: var(--card-secondary);
+  position: sticky; top: 0; z-index: 4;
   transition: background 0.2s, color 0.2s;
 }
 .colHighlight { background: var(--accent); color: white; }

@@ -252,8 +252,9 @@
   border-right: 1px solid var(--border);
   border-bottom: 1px solid var(--border);
   position: sticky;
+  top: 0;
   left: 0;
-  z-index: 3;
+  z-index: 5;
 }
 
 .headerCell {
@@ -263,6 +264,9 @@
   font-weight: 700;
   border-bottom: 1px solid var(--border);
   background: var(--card-secondary);
+  position: sticky;
+  top: 0;
+  z-index: 4;
   transition: background 0.15s, color 0.15s;
 }
 

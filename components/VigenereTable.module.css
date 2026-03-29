@@ -64,6 +64,8 @@
 /* ── Table scroll wrapper ── */
 .tableScroll {
   overflow-x: auto;
+  overflow-y: auto;
+  max-height: 70vh;
   border-radius: 12px;
   border: 1px solid var(--border);
   box-shadow: var(--shadow-sm);
@@ -87,8 +89,9 @@
   padding: 7px 5px;
   text-align: center;
   position: sticky;
+  top: 0;
   left: 0;
-  z-index: 4;
+  z-index: 5;
   border-right: 2px solid var(--border);
   border-bottom: 2px solid var(--border);
 }
@@ -101,6 +104,9 @@
   color: var(--text-subtle);
   border-bottom: 2px solid var(--border);
   background: var(--card-secondary);
+  position: sticky;
+  top: 0;
+  z-index: 4;
   transition: background 0.12s, color 0.12s;
   cursor: pointer;
 }

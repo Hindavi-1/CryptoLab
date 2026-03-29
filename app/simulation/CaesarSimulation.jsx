@@ -200,7 +200,7 @@ export default function CaesarSimulation({ stepsData, mode, colorVar }) {
                
                {/* Arrow Line Connecting Input and Output Code */}
                <div className={styles.arrowConnection} style={{ 
-                 left: `calc(${(current.inputCode / 25) * 100}%)`, 
+                 left: `calc(${(Math.min(current.inputCode, current.outputCode) / 25) * 100}%)`, 
                  width: `calc(${(Math.abs(current.outputCode - current.inputCode) / 25) * 100}%)`,
                  transformOrigin: current.outputCode > current.inputCode ? 'left center' : 'right center',
                  background: accentColor,
