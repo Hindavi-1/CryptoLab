@@ -149,6 +149,22 @@ export default function RailFenceSimulation({ stepsData, mode, colorVar }) {
 
       <PlayerBar player={player} totalSteps={n * 2} accentColor={accentColor} />
 
+      <div className={styles.statusRow}>
+        <div key={currentStep < n ? 'writing' : 'reading'} 
+             className={`${styles.phaseBadge} ${currentStep < n ? styles.phaseWriting : styles.phaseReading}`}
+             style={{ '--phase-color': currentStep < n ? accentColor : READING_COLOR }}>
+          <span className={styles.phaseIcon}>{currentStep < n ? "✎" : "🔍"}</span>
+          <span className={styles.phaseText}>
+            {mode === "encrypt" 
+              ? (currentStep < n ? "Writing Plaintext" : "Reading Ciphertext")
+              : (currentStep < n ? "Writing Ciphertext" : "Reading Plaintext")}
+          </span>
+        </div>
+        <div className={styles.phaseStepCount}>
+          Step {currentStep + 1} of {n * 2}
+        </div>
+      </div>
+
       <div className={styles.gridContainer}>
         <div className={styles.rfGrid}>
           {/* SVG Overlay for Path Arrows */}
