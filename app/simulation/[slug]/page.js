@@ -17,8 +17,8 @@ import PlayfairSimulation from "../PlayfairSimulation";
 import RailFenceSimulation from "../RailFenceSimulation";
 import ColumnarSimulation from "../ColumnarSimulation";
 import AffineSimulation from "../AffineSimulation";
-import HillSimulation from "../HillSimulation";
 import SubstitutionSimulation from "../SubstitutionSimulation";
+import EccSimulation from "../EccSimulation";
 import styles from "./simulationPage.module.css";
 
 // ─── Cipher metadata ────────────────────────────────────────────────────────
@@ -135,6 +135,20 @@ const CIPHER_META = {
     keyPlaceholder: "A-Z jumbled",
     description: "Replaces each letter with another according to a fixed, jumbled 26-letter alphabet.",
   },
+  ecc: {
+    name: "Elliptic Curve Cryptography",
+    tagline: "Asymmetric public key exchange over finite fields",
+    icon: "∿",
+    color: "purple",
+    category: "Asymmetric · Key Exchange",
+    formula: "y² ≡ x³ + ax + b (mod p)",
+    defaultText: "Data isn't encrypted directly here; this generates a Shared Secret instead. Press Encrypt!",
+    defaultKey: "23,1,1,3,10,6,15",
+    keyLabel: "p, a, b, Gx, Gy, privA, privB",
+    keyType: "text",
+    keyPlaceholder: "23, 1, 1, 3, 10, 6, 15",
+    description: "Generates public keys using point multiplication on an elliptic curve, then combines them to derive an identical shared cryptographic secret without transmitting it.",
+  },
 };
 
 // ─── Main Simulation Page ───────────────────────────────────────────────────
@@ -213,6 +227,23 @@ export default function SimulationPage({ params }) {
           if (k.length < 26) throw new Error("Key must be 26 unique letters.");
           result = mode === "encrypt" ? encryptSubstitution(input, k) : decryptSubstitution(input, k);
           newSteps = { type: "substitution", data: getSubstitutionSteps(input, k, mode) };
+          break;
+        }
+        case "ecc": {
+          const parts = key.split(",").map((s) => s.trim());
+          const pStr = parts[0] || "23";
+          const aStr = parts[1] || "1";
+          const bStr = parts[2] || "1";
+          const Gx = parts[3] || "3";
+          const Gy = parts[4] || "10";
+          const privA = parts[5] || "6";
+          const privB = parts[6] || "15";
+          
+          const { getECCSteps } = require("../../../lib/ciphers/ecc");
+          const eccTrace = getECCSteps(pStr, aStr, bStr, Gx, Gy, privA, privB);
+          
+          newSteps = eccTrace[0];
+          result = `A's Shared Info: (${newSteps.data.SharedA?.x}, ${newSteps.data.SharedA?.y})\nB's Shared Info: (${newSteps.data.SharedB?.x}, ${newSteps.data.SharedB?.y})`;
           break;
         }
         default:
@@ -470,6 +501,11 @@ export default function SimulationPage({ params }) {
             {/* Substitution */}
             {slug === "substitution" && steps?.type === "substitution" && (
               <SubstitutionSimulation stepsData={steps.data} mode={mode} colorVar={colorVar} />
+            )}
+
+            {/* ECC */}
+            {slug === "ecc" && steps?.type === "ecc_data" && (
+              <EccSimulation data={steps.data} colorVar={colorVar} />
             )}
           </div>
         )}
