@@ -402,31 +402,67 @@ export default function SimulationPage({ params }) {
             </div>
 
             {/* Key */}
-            <div className={styles.keyBlock}>
-              <label className={styles.inputLabel}>{meta.keyLabel}</label>
-              <input
-                className={styles.keyInput}
-                type={meta.keyType}
-                min={meta.keyType === "number" ? "2" : undefined}
-                max={meta.keyType === "number" ? "25" : undefined}
-                placeholder={meta.keyPlaceholder}
-                value={key}
-                onChange={(e) => setKey(e.target.value)}
-              />
-              <div className={styles.keyActions}>
-                <button
-                  className={`${styles.actionBtn} ${styles.swapBtn}`}
-                  onClick={swap}
-                  disabled={!output}
-                  title="Swap input/output and flip mode"
-                >
-                  ⇄ Swap
-                </button>
-                <button className={`${styles.actionBtn} ${styles.resetBtn}`} onClick={reset} title="Reset all">
-                  ↺ Reset
-                </button>
+            {slug === "ecc" ? (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', background: 'var(--card-secondary)', borderRadius: '12px', padding: '16px', border: '1px dashed var(--border)', flex: 1 }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <span className={styles.inputLabel} style={{ marginBottom: 0 }}>ECC Parameters</span>
+                  <button className={`${styles.actionBtn} ${styles.resetBtn}`} onClick={reset} title="Reset keys">↺ Reset</button>
+                </div>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '10px' }}>
+                  {["p (Prime)", "a (Curve)", "b (Curve)", "Gx (Base X)", "Gy (Base Y)", "privA (Alice)", "privB (Bob)"].map((labelWithDesc, idx) => {
+                    const label = labelWithDesc.split(" ")[0]; // "p", "a", etc.
+                    const desc = labelWithDesc.split(" ")[1]; // "(Prime)"
+                    const parts = key.split(",");
+                    const val = parts[idx] !== undefined ? parts[idx].trim() : "";
+                    return (
+                      <div key={label} style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                        <label className={styles.inputLabel} style={{ fontSize: '10px', textTransform: 'none', color: 'var(--text-subtle)' }}>
+                          <b style={{ color: 'var(--text)', fontSize: '12px', marginRight: '4px' }}>{label}</b> {desc}
+                        </label>
+                        <input
+                          className={styles.keyInput}
+                          type="number"
+                          style={{ minWidth: 0, padding: '8px 10px', height: 'auto', background: 'var(--card)' }}
+                          value={val}
+                          onChange={(e) => {
+                            const newParts = [...parts];
+                            for (let i = 0; i < 7; i++) newParts[i] = newParts[i] !== undefined ? newParts[i].trim() : "";
+                            newParts[idx] = e.target.value;
+                            setKey(newParts.join(","));
+                          }}
+                        />
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
-            </div>
+            ) : (
+              <div className={styles.keyBlock}>
+                <label className={styles.inputLabel}>{meta.keyLabel}</label>
+                <input
+                  className={styles.keyInput}
+                  type={meta.keyType}
+                  min={meta.keyType === "number" ? "2" : undefined}
+                  max={meta.keyType === "number" ? "25" : undefined}
+                  placeholder={meta.keyPlaceholder}
+                  value={key}
+                  onChange={(e) => setKey(e.target.value)}
+                />
+                <div className={styles.keyActions}>
+                  <button
+                    className={`${styles.actionBtn} ${styles.swapBtn}`}
+                    onClick={swap}
+                    disabled={!output}
+                    title="Swap input/output and flip mode"
+                  >
+                    ⇄ Swap
+                  </button>
+                  <button className={`${styles.actionBtn} ${styles.resetBtn}`} onClick={reset} title="Reset all">
+                    ↺ Reset
+                  </button>
+                </div>
+              </div>
+            )}
 
             {/* Output */}
             <div className={styles.inputGroup}>

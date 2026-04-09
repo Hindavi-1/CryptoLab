@@ -96,13 +96,14 @@ export default function EccSimulation({ data, colorVar }) {
   // Graph styling configuration
   const showGraph = validPoints.length > 0;
   const graphSize = 340;
-  const padding = 20;
+  const padding = 35; // Increased for axis labels
   const pInt = parseInt(p, 10);
-  const scale = showGraph ? (graphSize - 2 * padding) / pInt : 1;
+  // Finite field ranges from 0 to p-1, so dividing the inner space by (p-1) fits perfectly.
+  const scale = showGraph ? (graphSize - 2 * padding) / (pInt > 1 ? pInt - 1 : 1) : 1;
 
   const getP = (pt) => ({
-    cx: padding + parseInt(pt.x) * scale,
-    cy: graphSize - padding - parseInt(pt.y) * scale // Y goes up
+    cx: padding + pt.x * scale,
+    cy: graphSize - padding - pt.y * scale // Y goes up
   });
 
   const getPhaseDescription = () => {
@@ -132,21 +133,37 @@ export default function EccSimulation({ data, colorVar }) {
           {showGraph ? (
             <div className={styles.svgWrapper}>
               <svg width={graphSize} height={graphSize} className={styles.eccGraph}>
-                <defs>
-                  <pattern id="grid" width={scale} height={scale} patternUnits="userSpaceOnUse">
-                    <path d={`M ${scale} 0 L 0 0 0 ${scale}`} fill="none" stroke="var(--border)" strokeWidth="0.5" />
-                  </pattern>
-                </defs>
+                
+                {/* Dynamically generated exact grid lines & axes labels */}
+                {Array.from({ length: pInt }).map((_, i) => {
+                  const vx = padding + i * scale;
+                  const vy = graphSize - padding - i * scale;
+                  const isMajor = i % 5 === 0;
+                  return (
+                    <g key={`grid-${i}`}>
+                      <line x1={vx} y1={padding} x2={vx} y2={graphSize - padding} stroke="var(--border)" strokeWidth={isMajor ? "1" : "0.5"} />
+                      <line x1={padding} y1={vy} x2={graphSize - padding} y2={vy} stroke="var(--border)" strokeWidth={isMajor ? "1" : "0.5"} />
+                      {isMajor && (
+                        <>
+                          <text x={vx} y={graphSize - padding + 16} fontSize="10" fill="var(--text-subtle)" textAnchor="middle" fontFamily="var(--font-mono)">{i}</text>
+                          <text x={padding - 8} y={vy + 3} fontSize="10" fill="var(--text-subtle)" textAnchor="end" fontFamily="var(--font-mono)">{i}</text>
+                        </>
+                      )}
+                    </g>
+                  );
+                })}
 
-                {/* Grid and Axes */}
-                <rect width={graphSize} height={graphSize} fill="url(#grid)" />
+                {/* Primary Axes */}
                 <line x1={padding} y1={padding} x2={padding} y2={graphSize - padding} stroke="var(--text-subtle)" strokeWidth="2" />
                 <line x1={padding} y1={graphSize - padding} x2={graphSize - padding} y2={graphSize - padding} stroke="var(--text-subtle)" strokeWidth="2" />
+                
+                {/* Symmetry Line (y = p/2) */}
+                <line x1={padding} y1={graphSize - padding - (pInt / 2) * scale} x2={graphSize - padding} y2={graphSize - padding - (pInt / 2) * scale} stroke="var(--text-subtle)" opacity="0.4" strokeDasharray="4 4" strokeWidth="1" />
 
                 {/* All available valid points on curve */}
                 {validPoints.map((pt, i) => {
                   const { cx, cy } = getP(pt);
-                  return <circle key={i} cx={cx} cy={cy} r="3" fill="var(--border)" />;
+                  return <circle key={i} cx={cx} cy={cy} r="3" fill="var(--text-subtle)" opacity="0.6" />;
                 })}
 
                 {/* Highlight: Base Point G */}
