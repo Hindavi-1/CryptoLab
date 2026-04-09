@@ -17,6 +17,7 @@ import PlayfairSimulation from "../PlayfairSimulation";
 import RailFenceSimulation from "../RailFenceSimulation";
 import ColumnarSimulation from "../ColumnarSimulation";
 import AffineSimulation from "../AffineSimulation";
+import HillSimulation from "../HillSimulation";
 import SubstitutionSimulation from "../SubstitutionSimulation";
 import EccSimulation from "../EccSimulation";
 import styles from "./simulationPage.module.css";
@@ -434,6 +435,60 @@ export default function SimulationPage({ params }) {
                       </div>
                     );
                   })}
+                </div>
+              </div>
+            ) : slug === "hill" ? (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', background: 'var(--card-secondary)', borderRadius: '12px', padding: '16px', border: '1px dashed var(--border)', flex: 1, minWidth: '220px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                   <span className={styles.inputLabel} style={{ marginBottom: 0 }}>Key Matrix</span>
+                   <div style={{ display: 'flex', gap: '6px' }}>
+                     <button className={styles.actionBtn} onClick={() => setKey("9,4,5,7")} style={key.split(/[\s,]+/).length !== 9 ? { borderColor: 'var(--orange)', color: 'var(--orange)' } : { opacity: 0.5 }}>2×2</button>
+                     <button className={styles.actionBtn} onClick={() => setKey("6,24,1,13,16,10,20,17,15")} style={key.split(/[\s,]+/).length === 9 ? { borderColor: 'var(--orange)', color: 'var(--orange)' } : { opacity: 0.5 }}>3×3</button>
+                   </div>
+                </div>
+                
+                {(() => {
+                  const parts = key.split(/[\s,]+/).map(p => p.trim());
+                  const is3x3 = parts.length === 9;
+                  const size = is3x3 ? 3 : 2;
+                  
+                  return (
+                    <div style={{
+                      display: 'grid', 
+                      gridTemplateColumns: `repeat(${size}, 1fr)`, 
+                      gap: '8px', 
+                      alignSelf: 'center',
+                      background: 'var(--card)',
+                      padding: '12px',
+                      borderRadius: '8px',
+                      border: '1px solid var(--border)',
+                      position: 'relative'
+                    }}>
+                      <div style={{ position: 'absolute', top: 4, bottom: 4, left: 4, width: 8, borderLeft: '2px solid var(--text-subtle)', borderTop: '2px solid var(--text-subtle)', borderBottom: '2px solid var(--text-subtle)', borderRadius: '4px 0 0 4px', opacity: 0.6 }} />
+                      <div style={{ position: 'absolute', top: 4, bottom: 4, right: 4, width: 8, borderRight: '2px solid var(--text-subtle)', borderTop: '2px solid var(--text-subtle)', borderBottom: '2px solid var(--text-subtle)', borderRadius: '0 4px 4px 0', opacity: 0.6 }} />
+                      
+                      {Array.from({ length: size * size }).map((_, idx) => (
+                        <input
+                          key={idx}
+                          className={styles.keyInput}
+                          type="number"
+                          style={{ minWidth: "40px", textAlign: "center", padding: "8px 4px", fontSize: "14px", height: "auto" }}
+                          value={parts[idx] ?? ""}
+                          onChange={(e) => {
+                            const newParts = [...parts];
+                            for (let i = 0; i < size * size; i++) newParts[i] = newParts[i] ?? "0";
+                            newParts[idx] = e.target.value;
+                            setKey(newParts.join(","));
+                          }}
+                        />
+                      ))}
+                    </div>
+                  );
+                })()}
+
+                <div className={styles.keyActions} style={{marginTop: 'auto', justifyContent: 'flex-end'}}>
+                  <button className={`${styles.actionBtn} ${styles.swapBtn}`} onClick={swap} disabled={!output} title="Swap input/output and flip mode">⇄ Swap</button>
+                  <button className={`${styles.actionBtn} ${styles.resetBtn}`} onClick={reset} title="Reset all">↺ Reset</button>
                 </div>
               </div>
             ) : (
