@@ -20,6 +20,7 @@ import AffineSimulation from "../AffineSimulation";
 import HillSimulation from "../HillSimulation";
 import SubstitutionSimulation from "../SubstitutionSimulation";
 import EccSimulation from "../EccSimulation";
+import RsaSimulation from "../RsaSimulation";
 import styles from "./simulationPage.module.css";
 
 // ─── Cipher metadata ────────────────────────────────────────────────────────
@@ -150,6 +151,20 @@ const CIPHER_META = {
     keyPlaceholder: "23, 1, 1, 3, 10, 6, 15",
     description: "Generates public keys using point multiplication on an elliptic curve, then combines them to derive an identical shared cryptographic secret without transmitting it.",
   },
+  rsa: {
+    name: "RSA Cipher",
+    tagline: "Public-key cryptosystem based on integer factorization",
+    icon: "🔐",
+    color: "accent",
+    category: "Asymmetric · Public-Key",
+    formula: "c ≡ mᵉ (mod n)  |  m ≡ cᵈ (mod n)",
+    defaultText: "Hi",
+    defaultKey: "61,53,17",
+    keyLabel: "p, q, e (comma separated)",
+    keyType: "text",
+    keyPlaceholder: "e.g. 61, 53, 17",
+    description: "Encrypts data using a public key (e, n) and decrypts with a private key (d, n). Security relies on the difficulty of factoring large numbers.",
+  },
 };
 
 // ─── Main Simulation Page ───────────────────────────────────────────────────
@@ -157,12 +172,12 @@ export default function SimulationPage({ params }) {
   const slug = params.slug;
   const meta = CIPHER_META[slug];
 
-  const [mode, setMode]     = useState("encrypt");
-  const [input, setInput]   = useState(meta?.defaultText || "HELLO");
-  const [key, setKey]       = useState(meta?.defaultKey || "3");
+  const [mode, setMode] = useState("encrypt");
+  const [input, setInput] = useState(meta?.defaultText || "HELLO");
+  const [key, setKey] = useState(meta?.defaultKey || "3");
   const [output, setOutput] = useState("");
-  const [steps, setSteps]   = useState(null);
-  const [error, setError]   = useState("");
+  const [steps, setSteps] = useState(null);
+  const [error, setError] = useState("");
   const [copied, setCopied] = useState(false);
   const [isRunning, setIsRunning] = useState(false);
 
@@ -219,7 +234,7 @@ export default function SimulationPage({ params }) {
           result = mode === "encrypt" ? encryptHill(input, key) : decryptHill(input, key);
           newSteps = { type: "hill", data: getHillSteps(input, key, mode) };
           if (newSteps.data.error) {
-             throw new Error(newSteps.data.error);
+            throw new Error(newSteps.data.error);
           }
           break;
         }
@@ -239,12 +254,31 @@ export default function SimulationPage({ params }) {
           const Gy = parts[4] || "10";
           const privA = parts[5] || "6";
           const privB = parts[6] || "15";
-          
+
           const { getECCSteps } = require("../../../lib/ciphers/ecc");
           const eccTrace = getECCSteps(pStr, aStr, bStr, Gx, Gy, privA, privB);
-          
+
           newSteps = eccTrace[0];
           result = `A's Shared Info: (${newSteps.data.SharedA?.x}, ${newSteps.data.SharedA?.y})\nB's Shared Info: (${newSteps.data.SharedB?.x}, ${newSteps.data.SharedB?.y})`;
+          break;
+        }
+        case "rsa": {
+          const rsaParts = key.split(",").map(s => s.trim());
+          const rsaP = rsaParts[0] || "61";
+          const rsaQ = rsaParts[1] || "53";
+          const rsaE = rsaParts[2] || "17";
+          const { generateRSAKeys, encryptRSA, decryptRSA, getRSASteps } = require("../../../lib/ciphers/rsa");
+          const rsaKeys = generateRSAKeys(rsaP, rsaQ, rsaE);
+          const { publicKey, privateKey } = rsaKeys;
+          if (mode === "encrypt") {
+            result = encryptRSA(input, publicKey);
+            const rsaTrace = getRSASteps(input, { ...publicKey, d: privateKey.d }, "encrypt");
+            newSteps = rsaTrace[0];
+          } else {
+            result = decryptRSA(input, privateKey);
+            const rsaTrace = getRSASteps(input, { ...publicKey, d: privateKey.d }, "decrypt");
+            newSteps = rsaTrace[0];
+          }
           break;
         }
         default:
@@ -440,23 +474,23 @@ export default function SimulationPage({ params }) {
             ) : slug === "hill" ? (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', background: 'var(--card-secondary)', borderRadius: '12px', padding: '16px', border: '1px dashed var(--border)', flex: 1, minWidth: '220px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                   <span className={styles.inputLabel} style={{ marginBottom: 0 }}>Key Matrix</span>
-                   <div style={{ display: 'flex', gap: '6px' }}>
-                     <button className={styles.actionBtn} onClick={() => setKey("9,4,5,7")} style={key.split(/[\s,]+/).length !== 9 ? { borderColor: 'var(--orange)', color: 'var(--orange)' } : { opacity: 0.5 }}>2×2</button>
-                     <button className={styles.actionBtn} onClick={() => setKey("6,24,1,13,16,10,20,17,15")} style={key.split(/[\s,]+/).length === 9 ? { borderColor: 'var(--orange)', color: 'var(--orange)' } : { opacity: 0.5 }}>3×3</button>
-                   </div>
+                  <span className={styles.inputLabel} style={{ marginBottom: 0 }}>Key Matrix</span>
+                  <div style={{ display: 'flex', gap: '6px' }}>
+                    <button className={styles.actionBtn} onClick={() => setKey("9,4,5,7")} style={key.split(/[\s,]+/).length !== 9 ? { borderColor: 'var(--orange)', color: 'var(--orange)' } : { opacity: 0.5 }}>2×2</button>
+                    <button className={styles.actionBtn} onClick={() => setKey("6,24,1,13,16,10,20,17,15")} style={key.split(/[\s,]+/).length === 9 ? { borderColor: 'var(--orange)', color: 'var(--orange)' } : { opacity: 0.5 }}>3×3</button>
+                  </div>
                 </div>
-                
+
                 {(() => {
                   const parts = key.split(/[\s,]+/).map(p => p.trim());
                   const is3x3 = parts.length === 9;
                   const size = is3x3 ? 3 : 2;
-                  
+
                   return (
                     <div style={{
-                      display: 'grid', 
-                      gridTemplateColumns: `repeat(${size}, 1fr)`, 
-                      gap: '8px', 
+                      display: 'grid',
+                      gridTemplateColumns: `repeat(${size}, 1fr)`,
+                      gap: '8px',
                       alignSelf: 'center',
                       background: 'var(--card)',
                       padding: '12px',
@@ -466,7 +500,7 @@ export default function SimulationPage({ params }) {
                     }}>
                       <div style={{ position: 'absolute', top: 4, bottom: 4, left: 4, width: 8, borderLeft: '2px solid var(--text-subtle)', borderTop: '2px solid var(--text-subtle)', borderBottom: '2px solid var(--text-subtle)', borderRadius: '4px 0 0 4px', opacity: 0.6 }} />
                       <div style={{ position: 'absolute', top: 4, bottom: 4, right: 4, width: 8, borderRight: '2px solid var(--text-subtle)', borderTop: '2px solid var(--text-subtle)', borderBottom: '2px solid var(--text-subtle)', borderRadius: '0 4px 4px 0', opacity: 0.6 }} />
-                      
+
                       {Array.from({ length: size * size }).map((_, idx) => (
                         <input
                           key={idx}
@@ -486,9 +520,53 @@ export default function SimulationPage({ params }) {
                   );
                 })()}
 
-                <div className={styles.keyActions} style={{marginTop: 'auto', justifyContent: 'flex-end'}}>
+                <div className={styles.keyActions} style={{ marginTop: 'auto', justifyContent: 'flex-end' }}>
                   <button className={`${styles.actionBtn} ${styles.swapBtn}`} onClick={swap} disabled={!output} title="Swap input/output and flip mode">⇄ Swap</button>
                   <button className={`${styles.actionBtn} ${styles.resetBtn}`} onClick={reset} title="Reset all">↺ Reset</button>
+                </div>
+              </div>
+            ) : slug === "rsa" ? (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', background: 'var(--card-secondary)', borderRadius: '12px', padding: '16px', border: '1px dashed var(--border)', flex: 1 }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <span className={styles.inputLabel} style={{ marginBottom: 0 }}>RSA Key Parameters</span>
+                  <button className={`${styles.actionBtn} ${styles.resetBtn}`} onClick={reset}>↺ Reset</button>
+                </div>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px' }}>
+                  {[
+                    { label: 'p', desc: 'Prime 1', hint: 'e.g. 61' },
+                    { label: 'q', desc: 'Prime 2', hint: 'e.g. 53' },
+                    { label: 'e', desc: 'Public Exp', hint: 'e.g. 17' },
+                  ].map(({ label, desc, hint }, idx) => {
+                    const parts = key.split(',');
+                    const val = parts[idx]?.trim() ?? '';
+                    return (
+                      <div key={label} style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                        <label className={styles.inputLabel} style={{ fontSize: '10px', color: 'var(--text-subtle)', textTransform: 'none' }}>
+                          <b style={{ color: 'var(--text)', fontSize: '13px', marginRight: '4px' }}>{label}</b>{desc}
+                        </label>
+                        <input
+                          className={styles.keyInput}
+                          type="number"
+                          placeholder={hint}
+                          style={{ minWidth: 0, padding: '8px 10px', height: 'auto', background: 'var(--card)' }}
+                          value={val}
+                          onChange={(e) => {
+                            const newParts = key.split(',').map(p => p.trim());
+                            for (let i = 0; i < 3; i++) if (!newParts[i]) newParts[i] = '';
+                            newParts[idx] = e.target.value;
+                            setKey(newParts.join(','));
+                          }}
+                        />
+                      </div>
+                    );
+                  })}
+                </div>
+                <div style={{ fontSize: '11px', color: 'var(--text-subtle)', fontFamily: 'var(--font-mono)', padding: '6px 0' }}>
+                  n = p×q = {(() => { const pts = key.split(','); const p = parseInt(pts[0]) || 0; const q = parseInt(pts[1]) || 0; return p && q ? p * q : '?' })()},&nbsp;
+                  φ(n) = (p−1)(q−1) = {(() => { const pts = key.split(','); const p = parseInt(pts[0]) || 0; const q = parseInt(pts[1]) || 0; return p && q ? (p - 1) * (q - 1) : '?' })()}
+                </div>
+                <div className={styles.keyActions} style={{ justifyContent: 'flex-end' }}>
+                  <button className={`${styles.actionBtn} ${styles.swapBtn}`} onClick={swap} disabled={!output}>⇄ Swap</button>
                 </div>
               </div>
             ) : (
@@ -598,6 +676,11 @@ export default function SimulationPage({ params }) {
             {slug === "ecc" && steps?.type === "ecc_data" && (
               <EccSimulation data={steps.data} colorVar={colorVar} />
             )}
+
+            {/* RSA */}
+            {slug === "rsa" && steps?.type === "rsa_data" && (
+              <RsaSimulation data={steps.data} colorVar={colorVar} />
+            )}
           </div>
         )}
 
@@ -617,19 +700,19 @@ export default function SimulationPage({ params }) {
             <h3 className={styles.quickNavTitle}>Explore Further</h3>
             <Link href={`/cipher/${slug}`} className={styles.quickNavLink}>
               📖 Theory Page
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
             </Link>
             <Link href={`/tools/${slug}`} className={styles.quickNavLink}>
               ⚡ Interactive Tool
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
             </Link>
             <Link href="/simulation" className={styles.quickNavLink}>
               ◈ All Simulations
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
             </Link>
             <Link href="/compare" className={styles.quickNavLink}>
               ⇄ Compare Algorithms
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
             </Link>
           </div>
         </div>

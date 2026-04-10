@@ -1,0 +1,359 @@
+.wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  background: var(--card);
+  padding: 1.5rem;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  animation: fadeUp 0.4s ease both;
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes rsaPop {
+  0% { opacity: 0; transform: scale(0.94) translateY(8px); }
+  100% { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+/* Header */
+.header { display: flex; flex-direction: column; gap: 4px; }
+.title { font-size: 1.1rem; font-weight: 700; color: var(--text); font-family: var(--font-display); }
+.subtitle { font-size: 0.85rem; color: var(--text-subtle); font-family: var(--font-mono); }
+
+/* Keys row */
+.keysRow {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.keyCard {
+  flex: 1;
+  min-width: 160px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.keyCardLabel {
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+}
+
+.keyField {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+}
+
+.keyName {
+  color: var(--text-subtle);
+  font-family: var(--font-mono);
+  font-size: 11px;
+}
+
+.keyVal {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  color: var(--text);
+  max-width: 140px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.formulaCard {
+  flex: 1.5;
+  min-width: 200px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--card-secondary);
+  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.formulaCardTitle {
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--text-subtle);
+}
+
+.formulaCode {
+  font-family: var(--font-mono);
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: 0.02em;
+}
+
+.formulaNote {
+  font-size: 12px;
+  color: var(--text-subtle);
+  line-height: 1.5;
+}
+
+/* Player bar (Reused pattern) */
+.playerOuter { display: flex; flex-direction: column; gap: 8px; }
+.progressRow { display: flex; align-items: center; gap: 10px; }
+.progressTrack { flex: 1; height: 3px; background: var(--border); border-radius: 2px; overflow: hidden; }
+.progressFill { height: 100%; transition: width 0.3s ease; border-radius: 2px; }
+.progressText { font-family: var(--font-mono); font-size: 11px; white-space: nowrap; }
+.statusBadge { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 100px; border: 1px solid; text-transform: uppercase; white-space: nowrap; }
+.statusDot { width: 5px; height: 5px; border-radius: 50%; animation: dotPulse 1.2s ease-in-out infinite; }
+@keyframes dotPulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+.playerBar { display: flex; align-items: center; gap: 8px; padding: 10px 16px; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 12px; flex-wrap: wrap; }
+.playerBtns { display: flex; gap: 6px; flex-wrap: wrap; }
+.pBtn { display: inline-flex; align-items: center; gap: 4px; padding: 7px 13px; font-size: 12px; font-weight: 700; border-radius: 9px; border: 1px solid var(--border); background: var(--card); color: var(--text-muted); cursor: pointer; transition: all 0.18s; }
+.pBtn:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); transform: translateY(-1px); }
+.pBtn:disabled { opacity: 0.35; cursor: not-allowed; }
+.pBtnPrimary { color: white !important; box-shadow: 0 4px 14px rgba(0,0,0,0.15); }
+.pBtnPrimary:hover:not(:disabled) { opacity: 0.9; transform: translateY(-1px); }
+.speedGroup { display: flex; align-items: center; gap: 6px; margin-left: auto; }
+.speedLabel { font-size: 11px; font-weight: 600; color: var(--text-subtle); text-transform: uppercase; letter-spacing: 0.05em; }
+.speedSel { font-size: 12px; font-weight: 600; padding: 5px 9px; border-radius: 8px; border: 1px solid var(--border); background: var(--card); color: var(--text); cursor: pointer; outline: none; }
+.speedSel:focus { border-color: var(--accent); }
+
+/* Main area */
+.mainArea {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* Step detail */
+.stepDetail {
+  min-height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.stepCard {
+  width: 100%;
+  background: var(--card-secondary);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 2rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+  align-items: center;
+}
+
+.stepBadge {
+  align-self: flex-start;
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: white;
+  padding: 4px 12px;
+  border-radius: 100px;
+}
+
+/* Math flow */
+.mathFlow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  width: 100%;
+}
+
+.mathBox {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 16px 20px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  min-width: 100px;
+  transition: border-color 0.3s;
+}
+
+.mathBoxLabel {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--text-subtle);
+  letter-spacing: 0.07em;
+}
+
+.mathBoxValue {
+  font-family: var(--font-mono);
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: var(--text);
+  line-height: 1;
+  word-break: break-all;
+  text-align: center;
+  max-width: 180px;
+}
+
+.mathArrow {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  flex-shrink: 0;
+}
+
+.mathArrowLabel {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: currentColor;
+  opacity: 0.9;
+  white-space: nowrap;
+}
+
+.mathBoxSub {
+  font-size: 10px;
+  color: var(--text-subtle);
+  font-family: var(--font-mono);
+  font-weight: 500;
+  letter-spacing: 0.03em;
+  text-align: center;
+}
+
+.equationLine {
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+  color: var(--text-subtle);
+  text-align: center;
+  word-break: break-all;
+  padding: 8px 16px;
+  background: var(--card);
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  width: 100%;
+}
+
+.equationLine sup {
+  font-size: 0.65em;
+}
+
+.idleHint {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  color: var(--text-subtle);
+  font-size: 14px;
+  font-style: italic;
+  padding: 3rem;
+}
+
+.idleIcon { font-size: 2.5rem; }
+
+/* Progress strip */
+.progressStrip {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  background: var(--card-secondary);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.stripTitle {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--text-subtle);
+  font-family: var(--font-mono);
+}
+
+.stripRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.stripCell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: transparent;
+  transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+  min-width: 42px;
+  font-family: var(--font-mono);
+}
+
+.stripCellActive {
+  transform: scale(1.15);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+  z-index: 2;
+}
+
+.stripCharIn {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.stripCharOut {
+  font-size: 10px;
+  font-weight: 700;
+  animation: fadeUp 0.3s ease;
+  max-width: 50px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Accumulated output */
+.accOutput {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 12px 16px;
+  background: var(--card);
+  border-radius: 8px;
+  border: 1px solid var(--border);
+}
+
+.accLabel {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--text-subtle);
+}
+
+.accValue {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 600;
+  word-break: break-all;
+  line-height: 1.7;
+  animation: fadeUp 0.2s ease;
+}
