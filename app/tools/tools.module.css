@@ -92,6 +92,68 @@
   white-space: nowrap;
 }
 
+/* Search Bar */
+.searchBar {
+  margin-bottom: 24px;
+}
+
+.searchInputWrap {
+  display: flex;
+  align-items: center;
+  background: var(--card);
+  border: 1px solid var(--border);
+  padding: 0 16px;
+  border-radius: var(--radius-lg);
+  height: 48px;
+  transition: all var(--transition);
+  box-shadow: var(--shadow-sm);
+}
+
+.searchInputWrap:focus-within {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px var(--accent-glow);
+}
+
+.searchIcon {
+  color: var(--text-subtle);
+  margin-right: 12px;
+}
+
+.searchInput {
+  flex: 1;
+  background: transparent;
+  border: none;
+  font-family: var(--font-sans);
+  font-size: 15px;
+  color: var(--text);
+  outline: none;
+  height: 100%;
+}
+
+.searchInput::placeholder {
+  color: var(--text-muted);
+}
+
+.searchClear {
+  background: var(--bg-hover);
+  border: none;
+  color: var(--text-subtle);
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 11px;
+  transition: all var(--transition);
+}
+
+.searchClear:hover {
+  background: var(--border);
+  color: var(--text);
+}
+
 /* Filter bar */
 .filterBar {
   display: flex;

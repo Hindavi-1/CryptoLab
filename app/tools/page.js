@@ -30,8 +30,14 @@ const FILTER_COUNTS = Object.fromEntries(
 
 export default function ToolsPage() {
   const [active, setActive] = useState("All");
+  const [query, setQuery] = useState("");
 
-  const filtered = active === "All" ? ciphers : ciphers.filter((c) => c.category === active);
+  const q = query.toLowerCase().trim();
+  const filtered = ciphers.filter((c) => {
+    const matchCat = active === "All" || c.category === active;
+    const matchQ = !q || c.name.toLowerCase().includes(q) || c.tag.toLowerCase().includes(q) || c.description.toLowerCase().includes(q);
+    return matchCat && matchQ;
+  });
 
   return (
     <div className={styles.page}>
@@ -57,6 +63,27 @@ export default function ToolsPage() {
           </div>
         </div>
 
+        {/* Search bar */}
+        <div className={styles.searchBar}>
+          <div className={styles.searchInputWrap}>
+            <svg className={styles.searchIcon} width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+            </svg>
+            <input
+              id="tool-search"
+              className={styles.searchInput}
+              type="text"
+              placeholder="Search tools by name, type or keyword…"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              autoComplete="off"
+            />
+            {query && (
+              <button className={styles.searchClear} onClick={() => setQuery("")} aria-label="Clear search">✕</button>
+            )}
+          </div>
+        </div>
+
         {/* Filter bar */}
         <div className={styles.filterBar}>
           <div className={styles.filters}>
@@ -74,7 +101,7 @@ export default function ToolsPage() {
             ))}
           </div>
           <span className={styles.filterResult}>
-            {filtered.length} algorithm{filtered.length !== 1 ? "s" : ""}
+            {filtered.length} algorithm{filtered.length !== 1 ? "s" : ""}{q && ` for “${query}”`}
           </span>
         </div>
 
