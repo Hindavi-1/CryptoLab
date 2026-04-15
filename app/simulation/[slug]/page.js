@@ -21,6 +21,7 @@ import HillSimulation from "../HillSimulation";
 import SubstitutionSimulation from "../SubstitutionSimulation";
 import EccSimulation from "../EccSimulation";
 import RsaSimulation from "../RsaSimulation";
+import ElgamalSimulation from "../ElgamalSimulation";
 import styles from "./simulationPage.module.css";
 
 // ─── Cipher metadata ────────────────────────────────────────────────────────
@@ -165,6 +166,20 @@ const CIPHER_META = {
     keyPlaceholder: "e.g. 61, 53, 17",
     description: "Encrypts data using a public key (e, n) and decrypts with a private key (d, n). Security relies on the difficulty of factoring large numbers.",
   },
+  elgamal: {
+    name: "ElGamal Cryptosystem",
+    tagline: "Randomised asymmetric encryption over cyclic groups",
+    icon: "⟨G⟩",
+    color: "purple",
+    category: "Asymmetric · Public-Key",
+    formula: "C₁ = gᵏ mod p  |  C₂ = m·yᵏ mod p",
+    defaultText: "Hi",
+    defaultKey: "23,5,4,3",
+    keyLabel: "p, g, x, k (comma separated)",
+    keyType: "text",
+    keyPlaceholder: "e.g. 23, 5, 4, 3",
+    description: "Encrypts each character using a public key and a random ephemeral key. Security relies on the difficulty of the discrete logarithm problem.",
+  },
 };
 
 // ─── Main Simulation Page ───────────────────────────────────────────────────
@@ -278,6 +293,26 @@ export default function SimulationPage({ params }) {
             result = decryptRSA(input, privateKey);
             const rsaTrace = getRSASteps(input, { ...publicKey, d: privateKey.d }, "decrypt");
             newSteps = rsaTrace[0];
+          }
+          break;
+        }
+        case "elgamal": {
+          const egParts = key.split(",").map(s => s.trim());
+          const egP = egParts[0] || "23";
+          const egG = egParts[1] || "5";
+          const egX = egParts[2] || "4";
+          const egK = egParts[3] || "3";
+          const { generateElGamalKeys, encryptElGamal, decryptElGamal, getElGamalSteps } = require("../../../lib/ciphers/elgamal");
+          const egKeys = generateElGamalKeys(egP, egG, egX);
+          const { publicKey: egPub, privateKey: egPriv } = egKeys;
+          if (mode === "encrypt") {
+            result = encryptElGamal(input, egPub, egK);
+            const egTrace = getElGamalSteps(input, { ...egPub, k: BigInt(egK) }, "encrypt");
+            newSteps = egTrace[0];
+          } else {
+            result = decryptElGamal(input, egPriv);
+            const egTrace = getElGamalSteps(input, { ...egPriv }, "decrypt");
+            newSteps = egTrace[0];
           }
           break;
         }
@@ -569,6 +604,67 @@ export default function SimulationPage({ params }) {
                   <button className={`${styles.actionBtn} ${styles.swapBtn}`} onClick={swap} disabled={!output}>⇄ Swap</button>
                 </div>
               </div>
+            ) : slug === "elgamal" ? (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', background: 'var(--card-secondary)', borderRadius: '12px', padding: '16px', border: '1px dashed var(--border)', flex: 1 }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <span className={styles.inputLabel} style={{ marginBottom: 0 }}>ElGamal Parameters</span>
+                  <button className={`${styles.actionBtn} ${styles.resetBtn}`} onClick={reset}>↺ Reset</button>
+                </div>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '12px' }}>
+                  {[
+                    { label: 'p', desc: 'Prime Modulus', hint: 'e.g. 23', role: 'Public', color: 'var(--purple)' },
+                    { label: 'g', desc: 'Generator', hint: 'e.g. 5', role: 'Public', color: 'var(--purple)' },
+                    { label: 'x', desc: 'Private Key', hint: 'e.g. 4', role: 'Secret', color: 'var(--orange)' },
+                    { label: 'k', desc: 'Ephemeral Key', hint: 'e.g. 3', role: 'Random', color: 'var(--green)' },
+                  ].map(({ label, desc, hint, role, color }, idx) => {
+                    const parts = key.split(',');
+                    const val = parts[idx]?.trim() ?? '';
+                    return (
+                      <div key={label} style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                          <div style={{ display: 'flex', alignItems: 'baseline', gap: '6px' }}>
+                            <span style={{
+                              fontFamily: 'var(--font-mono)', fontSize: '18px', fontWeight: 800,
+                              color: color, lineHeight: 1
+                            }}>{label}</span>
+                            <span style={{
+                              fontSize: '9px', fontWeight: 700, textTransform: 'uppercase',
+                              letterSpacing: '0.06em', color: color, opacity: 0.7,
+                              background: `color-mix(in srgb, ${color} 12%, transparent)`,
+                              padding: '1px 5px', borderRadius: '4px'
+                            }}>{role}</span>
+                          </div>
+                          <span style={{ fontSize: '11px', color: 'var(--text-subtle)', fontWeight: 500 }}>{desc}</span>
+                        </div>
+                        <input
+                          className={styles.keyInput}
+                          type="number"
+                          placeholder={hint}
+                          style={{ minWidth: 0, padding: '8px 10px', height: 'auto', background: 'var(--card)', borderColor: `${color}44` }}
+                          value={val}
+                          onChange={(e) => {
+                            const newParts = key.split(',').map(p => p.trim());
+                            for (let i = 0; i < 4; i++) if (!newParts[i]) newParts[i] = '';
+                            newParts[idx] = e.target.value;
+                            setKey(newParts.join(','));
+                          }}
+                        />
+                      </div>
+                    );
+                  })}
+                </div>
+                <div style={{ fontSize: '11px', color: 'var(--text-subtle)', fontFamily: 'var(--font-mono)', padding: '4px 0' }}>
+                  {(() => {
+                    const pts = key.split(',');
+                    const p = parseInt(pts[0]) || 0, g = parseInt(pts[1]) || 0, x = parseInt(pts[2]) || 0;
+                    const y = (p && g && x) ? Math.pow(g, x) % p : '?';
+                    return <>Public key y = g<sup>x</sup> mod p = {g > 0 && x > 0 && p > 0 ? `${g}^${x} mod ${p} = ${y}` : '?'}</>;
+                  })()}
+                </div>
+                <div className={styles.keyActions} style={{ justifyContent: 'flex-end' }}>
+                  <button className={`${styles.actionBtn} ${styles.swapBtn}`} onClick={swap} disabled={!output}>⇄ Swap</button>
+                </div>
+              </div>
             ) : (
               <div className={styles.keyBlock}>
                 <label className={styles.inputLabel}>{meta.keyLabel}</label>
@@ -680,6 +776,11 @@ export default function SimulationPage({ params }) {
             {/* RSA */}
             {slug === "rsa" && steps?.type === "rsa_data" && (
               <RsaSimulation data={steps.data} colorVar={colorVar} />
+            )}
+
+            {/* ElGamal */}
+            {slug === "elgamal" && steps?.type === "elgamal_data" && (
+              <ElgamalSimulation data={steps.data} colorVar={colorVar} />
             )}
           </div>
         )}
