@@ -56,7 +56,7 @@ const SIMULATIONS = [
   { name: "DES",                slug: "des",          description: "Explore the internals of the Data Encryption Standard. Visualize initial permutations and Feistel rounds.", category: "Symmetric",   tag: "Block Cipher" },
   { name: "AES",                slug: "aes",          description: "Step inside the Advanced Encryption Standard. Watch SubBytes, ShiftRows, MixColumns, and AddRoundKey.", category: "Symmetric",   tag: "Block Cipher" },
   { name: "RSA",                slug: "rsa",          description: "See asymmetric cryptography in action. Step through key generation, encryption, and decryption using large primes.", category: "Asymmetric", tag: "Public Key" },
-  { name: "Diffie-Hellman",     slug: "dh",           description: "Simulate public key exchange. Watch two parties establish a shared secret over an untrusted channel.", category: "Asymmetric", tag: "Key Exchange" },
+  { name: "Diffie-Hellman",     slug: "diffie-hellman",description: "Simulate public key exchange. Watch two parties establish a shared secret over an untrusted channel.", category: "Asymmetric", tag: "Key Exchange" },
   { name: "ElGamal",            slug: "elgamal",      description: "Explore randomized asymmetric encryption based on Diffie-Hellman key exchange and discrete logarithms.", category: "Asymmetric", tag: "Public Key" },
   { name: "Elliptic Curve",     slug: "ecc",          description: "Visualize elliptic curve points. See scalar multiplication and how ECC achieves security with small keys.", category: "Asymmetric", tag: "Modern" },
 ];

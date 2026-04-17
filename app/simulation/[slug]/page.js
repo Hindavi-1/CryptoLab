@@ -22,6 +22,7 @@ import SubstitutionSimulation from "../SubstitutionSimulation";
 import EccSimulation from "../EccSimulation";
 import RsaSimulation from "../RsaSimulation";
 import ElgamalSimulation from "../ElgamalSimulation";
+import DiffieHellmanSimulation from "../DiffieHellmanSimulation";
 import styles from "./simulationPage.module.css";
 
 // ─── Cipher metadata ────────────────────────────────────────────────────────
@@ -180,6 +181,20 @@ const CIPHER_META = {
     keyPlaceholder: "e.g. 23, 5, 4, 3",
     description: "Encrypts each character using a public key and a random ephemeral key. Security relies on the difficulty of the discrete logarithm problem.",
   },
+  "diffie-hellman": {
+    name: "Diffie-Hellman Key Exchange",
+    tagline: "Securely sharing a secret over an insecure channel",
+    icon: "🔑",
+    color: "purple",
+    category: "Asymmetric · Key Exchange",
+    formula: "A = gᵃ mod p  |  S = Bᵃ mod p",
+    defaultText: "Data isn't encrypted directly here; this generates a Shared Secret instead. Press Encrypt!",
+    defaultKey: "23,5,6,15",
+    keyLabel: "p, g, a, b (comma separated)",
+    keyType: "text",
+    keyPlaceholder: "e.g. 23, 5, 6, 15",
+    description: "Allows two parties to establish a shared secret over an insecure channel. Each party generates a public key from their private key, exchanges it, and computes the identical shared secret.",
+  },
 };
 
 // ─── Main Simulation Page ───────────────────────────────────────────────────
@@ -314,6 +329,18 @@ export default function SimulationPage({ params }) {
             const egTrace = getElGamalSteps(input, { ...egPriv }, "decrypt");
             newSteps = egTrace[0];
           }
+          break;
+        }
+        case "diffie-hellman": {
+          const dhParts = key.split(",").map(s => s.trim());
+          const dhP = dhParts[0] || "23";
+          const dhG = dhParts[1] || "5";
+          const dhA = dhParts[2] || "6";
+          const dhB = dhParts[3] || "15";
+          const { getDHSteps } = require("../../../lib/ciphers/dh");
+          const dhTrace = getDHSteps(dhP, dhG, dhA, dhB);
+          newSteps = dhTrace[0];
+          result = `Alice's Shared Info: A = ${newSteps.data.A}, Secret = ${newSteps.data.Sa}\nBob's Shared Info: B = ${newSteps.data.B}, Secret = ${newSteps.data.Sb}`;
           break;
         }
         default:
@@ -665,6 +692,66 @@ export default function SimulationPage({ params }) {
                   <button className={`${styles.actionBtn} ${styles.swapBtn}`} onClick={swap} disabled={!output}>⇄ Swap</button>
                 </div>
               </div>
+            ) : slug === "diffie-hellman" ? (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', background: 'var(--card-secondary)', borderRadius: '12px', padding: '16px', border: '1px dashed var(--border)', flex: 1 }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <span className={styles.inputLabel} style={{ marginBottom: 0 }}>Diffie-Hellman Parameters</span>
+                  <button className={`${styles.actionBtn} ${styles.resetBtn}`} onClick={reset}>↺ Reset</button>
+                </div>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '12px' }}>
+                  {[
+                    { label: 'p', desc: 'Prime Modulus', hint: 'e.g. 23', role: 'Public', color: 'var(--purple)' },
+                    { label: 'g', desc: 'Generator', hint: 'e.g. 5', role: 'Public', color: 'var(--purple)' },
+                    { label: 'a', desc: 'Alice\'s Secret', hint: 'e.g. 6', role: 'Secret', color: 'var(--orange)' },
+                    { label: 'b', desc: 'Bob\'s Secret', hint: 'e.g. 15', role: 'Secret', color: '#3b82f6' },
+                  ].map(({ label, desc, hint, role, color }, idx) => {
+                    const parts = key.split(',');
+                    const val = parts[idx]?.trim() ?? '';
+                    return (
+                      <div key={label} style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                          <div style={{ display: 'flex', alignItems: 'baseline', gap: '6px' }}>
+                            <span style={{
+                              fontFamily: 'var(--font-mono)', fontSize: '18px', fontWeight: 800,
+                              color: color, lineHeight: 1
+                            }}>{label}</span>
+                            <span style={{
+                              fontSize: '9px', fontWeight: 700, textTransform: 'uppercase',
+                              letterSpacing: '0.06em', color: color, opacity: 0.7,
+                              background: `color-mix(in srgb, ${color} 12%, transparent)`,
+                              padding: '1px 5px', borderRadius: '4px'
+                            }}>{role}</span>
+                          </div>
+                          <span style={{ fontSize: '11px', color: 'var(--text-subtle)', fontWeight: 500 }}>{desc}</span>
+                        </div>
+                        <input
+                          className={styles.keyInput}
+                          type="number"
+                          placeholder={hint}
+                          style={{ minWidth: 0, padding: '8px 10px', height: 'auto', background: 'var(--card)', borderColor: `${color}44` }}
+                          value={val}
+                          onChange={(e) => {
+                            const newParts = key.split(',').map(p => p.trim());
+                            for (let i = 0; i < 4; i++) if (!newParts[i]) newParts[i] = '';
+                            newParts[idx] = e.target.value;
+                            setKey(newParts.join(','));
+                          }}
+                        />
+                      </div>
+                    );
+                  })}
+                </div>
+                <div style={{ fontSize: '11px', color: 'var(--text-subtle)', fontFamily: 'var(--font-mono)', padding: '4px 0' }}>
+                  {(() => {
+                    const pts = key.split(',');
+                    const p = parseInt(pts[0]) || 0, g = parseInt(pts[1]) || 0;
+                    const a = parseInt(pts[2]) || 0, b = parseInt(pts[3]) || 0;
+                    return <>Public Keys: A = {g > 0 && a > 0 && p > 0 ? `${g}^${a} mod ${p}` : '?'} | B = {g > 0 && b > 0 && p > 0 ? `${g}^${b} mod ${p}` : '?'}</>;
+                  })()}
+                </div>
+                <div className={styles.keyActions} style={{ justifyContent: 'flex-end' }}>
+                </div>
+              </div>
             ) : (
               <div className={styles.keyBlock}>
                 <label className={styles.inputLabel}>{meta.keyLabel}</label>
@@ -781,6 +868,11 @@ export default function SimulationPage({ params }) {
             {/* ElGamal */}
             {slug === "elgamal" && steps?.type === "elgamal_data" && (
               <ElgamalSimulation data={steps.data} colorVar={colorVar} />
+            )}
+
+            {/* Diffie-Hellman */}
+            {slug === "diffie-hellman" && steps?.type === "dh_data" && (
+              <DiffieHellmanSimulation data={steps.data} colorVar={colorVar} />
             )}
           </div>
         )}
