@@ -181,11 +181,13 @@ function MatrixConnector({ inA, inB, outA, outB, rule, color }) {
 /* ── Main Component ── */
 export default function PlayfairSimulation({ stepsData, mode, colorVar }) {
   const accentColor = colorVar || "var(--orange)";
+  const player = useSimulationPlayer(steps.length);
+  const { currentStep, play, pause, resume, reset, stepForward, stepBack } = player;
+
   if (!stepsData || !stepsData.square || stepsData.square.length === 0) return null;
 
   const { square, steps } = stepsData;
-  const player = useSimulationPlayer(steps.length);
-  const { currentStep } = player;
+
 
   const notStarted = currentStep === -1;
   const activeStep = notStarted ? null : steps[Math.min(currentStep, steps.length - 1)];
