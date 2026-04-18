@@ -24,6 +24,7 @@ import RsaSimulation from "../RsaSimulation";
 import ElgamalSimulation from "../ElgamalSimulation";
 import DiffieHellmanSimulation from "../DiffieHellmanSimulation";
 import DesSimulation from "../DesSimulation";
+import AesSimulation from "../AesSimulation";
 import styles from "./simulationPage.module.css";
 
 // ─── Cipher metadata ────────────────────────────────────────────────────────
@@ -153,6 +154,20 @@ const CIPHER_META = {
     keyType: "text",
     keyPlaceholder: "e.g. 0123456789ABCDEF,0000000000000000,CBC",
     description: "A symmetric-key algorithm for the encryption of digital data. Although its short key length makes it too insecure for modern applications, it was highly influential in the advancement of cryptography.",
+  },
+  aes: {
+    name: "Advanced Encryption Standard",
+    tagline: "The modern symmetric standard",
+    icon: "🔐",
+    color: "green",
+    category: "Symmetric · Block Cipher",
+    formula: "SPN Network (SubBytes, ShiftRows, MixColumns, AddRoundKey)",
+    defaultText: "HELLO",
+    defaultKey: "0123456789ABCDEF0123456789ABCDEF,00000000000000000000000000000000,CBC",
+    keyLabel: "Key(Hex), IV(Hex), Mode",
+    keyType: "text",
+    keyPlaceholder: "e.g. 32-hex-chars, 32-hex-chars, CBC",
+    description: "The Advanced Encryption Standard (AES) is a symmetric block cipher that processes data in 128-bit blocks using keys of 128, 192, or 256 bits through a substitution-permutation network.",
   },
   ecc: {
     name: "Elliptic Curve Cryptography",
@@ -366,6 +381,18 @@ export default function SimulationPage({ params }) {
           const { getDESSteps } = require("../../../lib/ciphers/des");
           const desTrace = getDESSteps(input, desKey, mode, { blockMode: desMode, ivHex: desIV, format: "hex" });
           newSteps = desTrace[0];
+          result = newSteps.data.output;
+          break;
+        }
+        case "aes": {
+          const aesParts = key.split(",").map(s => s.trim());
+          const aesKey = aesParts[0] || "0123456789ABCDEF0123456789ABCDEF";
+          const aesIV = aesParts[1] || "00000000000000000000000000000000";
+          const aesMode = aesParts[2] || "CBC";
+          const { getAESSteps } = require("../../../lib/ciphers/aes");
+          const keySize = aesKey.length === 64 ? 256 : (aesKey.length === 48 ? 192 : 128);
+          const aesTrace = getAESSteps(input, aesKey, mode, { blockMode: aesMode, ivHex: aesIV, format: "base64", keySize });
+          newSteps = aesTrace[0];
           result = newSteps.data.output;
           break;
         }
@@ -830,6 +857,58 @@ export default function SimulationPage({ params }) {
                   <button className={`${styles.actionBtn} ${styles.swapBtn}`} onClick={swap} disabled={!output}>⇄ Swap</button>
                 </div>
               </div>
+            ) : slug === "aes" ? (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', background: 'var(--card-secondary)', borderRadius: '12px', padding: '16px', border: '1px dashed var(--border)', flex: 1 }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <span className={styles.inputLabel} style={{ marginBottom: 0 }}>AES Parameters</span>
+                  <button className={`${styles.actionBtn} ${styles.resetBtn}`} onClick={reset}>↺ Reset</button>
+                </div>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px' }}>
+                  {[
+                    { label: 'Key', desc: '32 Hex Chars', hint: '0123456789ABCDEF0123456789ABCDEF', role: 'Secret', color: 'var(--orange)' },
+                    { label: 'IV', desc: '32 Hex Chars', hint: '00000000000000000000000000000000', role: 'Public', color: 'var(--purple)' },
+                    { label: 'Mode', desc: 'ECB, CBC, CFB...', hint: 'CBC', role: 'Config', color: 'var(--green)' },
+                  ].map(({ label, desc, hint, role, color }, idx) => {
+                    const parts = key.split(',');
+                    const val = parts[idx]?.trim() ?? '';
+                    return (
+                      <div key={label} style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                           <div style={{ display: 'flex', alignItems: 'baseline', gap: '6px' }}>
+                             <span style={{
+                               fontFamily: 'var(--font-mono)', fontSize: '18px', fontWeight: 800,
+                               color: color, lineHeight: 1
+                             }}>{label}</span>
+                             <span style={{
+                               fontSize: '9px', fontWeight: 700, textTransform: 'uppercase',
+                               letterSpacing: '0.06em', color: color, opacity: 0.7,
+                               background: `color-mix(in srgb, ${color} 12%, transparent)`,
+                               padding: '1px 5px', borderRadius: '4px'
+                             }}>{role}</span>
+                           </div>
+                           <span style={{ fontSize: '11px', color: 'var(--text-subtle)', fontWeight: 500 }}>{desc}</span>
+                        </div>
+                        <input
+                          className={styles.keyInput}
+                          type="text"
+                          placeholder={hint}
+                          style={{ minWidth: 0, padding: '8px 10px', height: 'auto', background: 'var(--card)', borderColor: `${color}44` }}
+                          value={val}
+                          onChange={(e) => {
+                            const newParts = key.split(',').map(p => p.trim());
+                            for (let i = 0; i < 3; i++) if (!newParts[i]) newParts[i] = '';
+                            newParts[idx] = e.target.value.toUpperCase();
+                            setKey(newParts.join(','));
+                          }}
+                        />
+                      </div>
+                    );
+                  })}
+                </div>
+                <div className={styles.keyActions} style={{ justifyContent: 'flex-end' }}>
+                  <button className={`${styles.actionBtn} ${styles.swapBtn}`} onClick={swap} disabled={!output}>⇄ Swap</button>
+                </div>
+              </div>
             ) : (
               <div className={styles.keyBlock}>
                 <label className={styles.inputLabel}>{meta.keyLabel}</label>
@@ -956,6 +1035,11 @@ export default function SimulationPage({ params }) {
             {/* DES */}
             {slug === "des" && steps?.type === "des_data" && (
               <DesSimulation data={steps.data} colorVar={colorVar} />
+            )}
+
+            {/* AES */}
+            {slug === "aes" && steps?.type === "aes_data" && (
+              <AesSimulation data={steps.data} colorVar={colorVar} />
             )}
           </div>
         )}

@@ -1,0 +1,255 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  width: 100%;
+}
+
+.controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  background: var(--card-secondary);
+  padding: 16px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+}
+
+.btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 8px;
+  background: var(--card);
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 1px solid var(--border);
+}
+
+.btn:hover:not(:disabled) {
+  background: var(--v-color, var(--accent));
+  color: #fff;
+  border-color: var(--v-color, var(--accent));
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.stageInfo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  min-width: 200px;
+}
+
+.stageName {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.stageDesc {
+  font-size: 12px;
+  color: var(--text-subtle);
+  text-align: center;
+}
+
+.visualizer {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 40px;
+  min-height: 400px;
+  position: relative;
+  overflow: hidden;
+}
+
+.statusCard {
+  background: var(--card-secondary);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  text-align: center;
+}
+
+.statusItem {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.statusLabel {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-subtle);
+  font-weight: 700;
+}
+
+.statusValue {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  color: var(--text);
+  background: var(--card);
+  padding: 4px 8px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.blockRow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 32px;
+  z-index: 2;
+}
+
+.block {
+  padding: 16px 24px;
+  background: var(--card-secondary);
+  border: 2px solid var(--v-color, var(--accent));
+  border-radius: 8px;
+  font-family: var(--font-mono);
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  min-width: 140px;
+  position: relative;
+  word-break: break-all;
+}
+
+.blockLabel {
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--card);
+  padding: 0 6px;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--text-subtle);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-family: var(--font-sans);
+  border-radius: 4px;
+  border: 1px solid var(--border);
+  white-space: nowrap;
+}
+
+.matrixGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 4px;
+  background: var(--card-secondary);
+  border: 2px solid var(--v-color, var(--accent));
+  border-radius: 8px;
+  padding: 12px;
+  position: relative;
+}
+
+.matrixCell {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  font-family: var(--font-mono);
+  font-size: 14px;
+  color: var(--text);
+  font-weight: 600;
+}
+
+.spnContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  width: 100%;
+  max-width: 600px;
+}
+
+.spnStep {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+}
+
+.spnBox {
+  width: 100%;
+  padding: 16px;
+  background: var(--card-secondary);
+  border: 2px solid var(--border);
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.3s ease;
+}
+
+.spnBoxActive {
+  border-color: var(--v-color, var(--accent));
+  background: color-mix(in srgb, var(--v-color, var(--accent)) 10%, transparent);
+  box-shadow: 0 0 15px color-mix(in srgb, var(--v-color, var(--accent)) 20%, transparent);
+}
+
+.spnBoxTitle {
+  font-weight: 700;
+  font-size: 16px;
+  color: var(--text);
+}
+
+.spnBoxDesc {
+  font-size: 12px;
+  color: var(--text-subtle);
+  text-align: center;
+}
+
+.arrowDown {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: var(--text-subtle);
+}
+
+.arrowLine {
+  width: 2px;
+  height: 24px;
+  background: var(--text-subtle);
+}
+
+.arrowHead {
+  width: 0; 
+  height: 0; 
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-top: 6px solid var(--text-subtle);
+}
