@@ -23,6 +23,7 @@ import EccSimulation from "../EccSimulation";
 import RsaSimulation from "../RsaSimulation";
 import ElgamalSimulation from "../ElgamalSimulation";
 import DiffieHellmanSimulation from "../DiffieHellmanSimulation";
+import DesSimulation from "../DesSimulation";
 import styles from "./simulationPage.module.css";
 
 // ─── Cipher metadata ────────────────────────────────────────────────────────
@@ -138,6 +139,20 @@ const CIPHER_META = {
     keyType: "text",
     keyPlaceholder: "A-Z jumbled",
     description: "Replaces each letter with another according to a fixed, jumbled 26-letter alphabet.",
+  },
+  des: {
+    name: "Data Encryption Standard",
+    tagline: "The original 64-bit block cipher",
+    icon: "🛡️",
+    color: "orange",
+    category: "Symmetric · Block Cipher",
+    formula: "16 Rounds Feistel Network",
+    defaultText: "HELLO",
+    defaultKey: "0123456789ABCDEF,0000000000000000,CBC",
+    keyLabel: "Key(Hex), IV(Hex), Mode",
+    keyType: "text",
+    keyPlaceholder: "e.g. 0123456789ABCDEF,0000000000000000,CBC",
+    description: "A symmetric-key algorithm for the encryption of digital data. Although its short key length makes it too insecure for modern applications, it was highly influential in the advancement of cryptography.",
   },
   ecc: {
     name: "Elliptic Curve Cryptography",
@@ -341,6 +356,17 @@ export default function SimulationPage({ params }) {
           const dhTrace = getDHSteps(dhP, dhG, dhA, dhB);
           newSteps = dhTrace[0];
           result = `Alice's Shared Info: A = ${newSteps.data.A}, Secret = ${newSteps.data.Sa}\nBob's Shared Info: B = ${newSteps.data.B}, Secret = ${newSteps.data.Sb}`;
+          break;
+        }
+        case "des": {
+          const desParts = key.split(",").map(s => s.trim());
+          const desKey = desParts[0] || "0123456789ABCDEF";
+          const desIV = desParts[1] || "0000000000000000";
+          const desMode = desParts[2] || "CBC";
+          const { getDESSteps } = require("../../../lib/ciphers/des");
+          const desTrace = getDESSteps(input, desKey, mode, { blockMode: desMode, ivHex: desIV, format: "hex" });
+          newSteps = desTrace[0];
+          result = newSteps.data.output;
           break;
         }
         default:
@@ -752,6 +778,58 @@ export default function SimulationPage({ params }) {
                 <div className={styles.keyActions} style={{ justifyContent: 'flex-end' }}>
                 </div>
               </div>
+            ) : slug === "des" ? (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', background: 'var(--card-secondary)', borderRadius: '12px', padding: '16px', border: '1px dashed var(--border)', flex: 1 }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <span className={styles.inputLabel} style={{ marginBottom: 0 }}>DES Parameters</span>
+                  <button className={`${styles.actionBtn} ${styles.resetBtn}`} onClick={reset}>↺ Reset</button>
+                </div>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px' }}>
+                  {[
+                    { label: 'Key', desc: '16 Hex Chars', hint: '0123456789ABCDEF', role: 'Secret', color: 'var(--orange)' },
+                    { label: 'IV', desc: '16 Hex Chars', hint: '0000000000000000', role: 'Public', color: 'var(--purple)' },
+                    { label: 'Mode', desc: 'ECB, CBC, CFB...', hint: 'CBC', role: 'Config', color: 'var(--green)' },
+                  ].map(({ label, desc, hint, role, color }, idx) => {
+                    const parts = key.split(',');
+                    const val = parts[idx]?.trim() ?? '';
+                    return (
+                      <div key={label} style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                           <div style={{ display: 'flex', alignItems: 'baseline', gap: '6px' }}>
+                             <span style={{
+                               fontFamily: 'var(--font-mono)', fontSize: '18px', fontWeight: 800,
+                               color: color, lineHeight: 1
+                             }}>{label}</span>
+                             <span style={{
+                               fontSize: '9px', fontWeight: 700, textTransform: 'uppercase',
+                               letterSpacing: '0.06em', color: color, opacity: 0.7,
+                               background: `color-mix(in srgb, ${color} 12%, transparent)`,
+                               padding: '1px 5px', borderRadius: '4px'
+                             }}>{role}</span>
+                           </div>
+                           <span style={{ fontSize: '11px', color: 'var(--text-subtle)', fontWeight: 500 }}>{desc}</span>
+                        </div>
+                        <input
+                          className={styles.keyInput}
+                          type="text"
+                          placeholder={hint}
+                          style={{ minWidth: 0, padding: '8px 10px', height: 'auto', background: 'var(--card)', borderColor: `${color}44` }}
+                          value={val}
+                          onChange={(e) => {
+                            const newParts = key.split(',').map(p => p.trim());
+                            for (let i = 0; i < 3; i++) if (!newParts[i]) newParts[i] = '';
+                            newParts[idx] = e.target.value.toUpperCase();
+                            setKey(newParts.join(','));
+                          }}
+                        />
+                      </div>
+                    );
+                  })}
+                </div>
+                <div className={styles.keyActions} style={{ justifyContent: 'flex-end' }}>
+                  <button className={`${styles.actionBtn} ${styles.swapBtn}`} onClick={swap} disabled={!output}>⇄ Swap</button>
+                </div>
+              </div>
             ) : (
               <div className={styles.keyBlock}>
                 <label className={styles.inputLabel}>{meta.keyLabel}</label>
@@ -873,6 +951,11 @@ export default function SimulationPage({ params }) {
             {/* Diffie-Hellman */}
             {slug === "diffie-hellman" && steps?.type === "dh_data" && (
               <DiffieHellmanSimulation data={steps.data} colorVar={colorVar} />
+            )}
+
+            {/* DES */}
+            {slug === "des" && steps?.type === "des_data" && (
+              <DesSimulation data={steps.data} colorVar={colorVar} />
             )}
           </div>
         )}
