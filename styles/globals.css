@@ -173,3 +173,9 @@ input, textarea, select {
   from { background-position: -200% center; }
   to   { background-position: 200% center; }
 }
+
+@media (max-width: 768px) {
+  .container {
+    padding: 0 16px;
+  }
+}

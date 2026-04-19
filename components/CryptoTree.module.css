@@ -136,6 +136,11 @@
   border-radius: 20px 20px 0 0;
 }
 
+.treePanelInner {
+  /* For mobile horizontal scrolling if needed */
+  width: 100%;
+}
+
 /* ─── Node Wrapper ─────────────────────────────────────────────── */
 .nodeWrapper {
   display: flex;
@@ -461,4 +466,66 @@
   background: rgba(244,114,182,0.10);
   transform: translateY(-2px);
   opacity: 1;
+}
+
+/* ─── Responsive ───────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .section {
+    padding: 60px 0 80px;
+  }
+  .header {
+    margin-bottom: 40px;
+  }
+  .treePanel {
+    padding: 24px 16px;
+    border-radius: 16px;
+  }
+  .treePanelInner {
+    overflow-x: auto;
+    padding-bottom: 12px;
+  }
+  /* Optional scrollbar styling for the inner panel */
+  .treePanelInner::-webkit-scrollbar {
+    height: 6px;
+  }
+  .treePanelInner::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 3px;
+  }
+}
+
+@media (max-width: 520px) {
+  .title {
+    font-size: 26px;
+  }
+  .legend {
+    gap: 12px;
+  }
+  .node {
+    padding: 8px 12px;
+  }
+  .nodeLabel {
+    font-size: 13px !important;
+  }
+  .nodeIcon {
+    font-size: 14px !important;
+  }
+  .type_root {
+    padding: 10px 14px;
+  }
+  .type_category {
+    padding: 8px 10px;
+  }
+  .badge {
+    font-size: 9px;
+  }
+  .children {
+    padding-left: 18px;
+  }
+  .connector {
+    left: -10px;
+  }
+  .children::before {
+    left: 4px;
+  }
 }

@@ -138,7 +138,9 @@ export default function CryptoTree() {
         {/* Tree panel */}
         <div className={styles.treePanel}>
           <div className={styles.treePanelGlow} />
-          <TreeNode node={cryptoTree} depth={0} />
+          <div className={styles.treePanelInner}>
+            <TreeNode node={cryptoTree} depth={0} />
+          </div>
         </div>
       </div>
     </section>
