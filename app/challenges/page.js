@@ -1,3 +1,4 @@
+import Link from "next/link";
 import styles from "./challenges.module.css";
 
 const challenges = [
@@ -105,7 +106,9 @@ export default function ChallengesPage() {
                   <span className={styles.pointsN}>{c.points}</span>
                   <span className={styles.pointsLabel}>pts</span>
                 </div>
-                <button className={styles.startBtn}>Start →</button>
+                <Link href={`/challenges/${c.id}`} className={styles.startBtn}>
+                  Start →
+                </Link>
               </div>
             </div>
           ))}
